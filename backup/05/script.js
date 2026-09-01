@@ -1412,99 +1412,125 @@ function initSplashScreen() {
 
   if (!splashScreen || !splashWavePath || !imgSource) return;
 
-  /*
-   * splash.png은 선화 이미지다.
-   *
-   * 목표:
-   * 1. 외부 배경 = 투명
-   * 2. 실제 반가사유상 몸체 = 흰색 마스크
-   * 3. 팔/가슴/다리 사이 Negative Space = 투명
-   * 4. 원본 선화는 별도의 overlay로 그대로 유지
-   */
+  // Watertight Contour Hierarchy & Topological Hole Subtraction Algorithm
+  // 반가사유상 외곽선 수밀성(Watertight Boundary) 처리 후
+  // 머리, 목, 어깨, 팔, 가슴, 몸통, 무릎, 다리, 받침 전체 = 100% SOLID GOLD FILL MASK
+  // 팔-가슴-다리 사이의 닫힌 내부 Negative Space Hole 1개 & 외부 배경 = 100% TRANSPARENT
   function createSolidMask(img, callback) {
-    const natW = img.naturalWidth;
-    const natH = img.naturalHeight;
+    const natW = img.naturalWidth || 240;
+    const natH = img.naturalHeight || 340;
+    const pad = 12;
 
-    if (!natW || !natH) {
-      console.warn('[Splash] splash.png size error');
-      return;
+    const canvasW = natW + pad * 2;
+    const canvasH = natH + pad * 2;
+
+    // 1. 원본 선화 렌더링 캔버스
+    const canvas1 = document.createElement('canvas');
+    canvas1.width = canvasW;
+    canvas1.height = canvasH;
+    const ctx1 = canvas1.getContext('2d');
+    ctx1.drawImage(img, pad, pad, natW, natH);
+
+    // 2. 외곽선 수밀성(Watertight Wall) 캔버스 (선화 미세 갭 봉합)
+    const canvas2 = document.createElement('canvas');
+    canvas2.width = canvasW;
+    canvas2.height = canvasH;
+    const ctx2 = canvas2.getContext('2d');
+    ctx2.filter = 'blur(3.5px)';
+    ctx2.drawImage(canvas1, 0, 0);
+
+    const imgData2 = ctx2.getImageData(0, 0, canvasW, canvasH);
+    const data2 = imgData2.data;
+    const totalPixels = canvasW * canvasH;
+
+    // 수밀적 외곽선 경계 벽 판별 (alpha > 8)
+    const isBoundary = new Uint8Array(totalPixels);
+    for (let i = 0; i < totalPixels; i++) {
+      if (data2[i * 4 + 3] > 8) {
+        isBoundary[i] = 1;
+      }
     }
 
-    const pad = 16;
+    // 3. 캔버스 가장자리에서 외곽선 외부 (isOutside) Flood Fill 탐색
+    const isOutside = new Uint8Array(totalPixels);
+    const queue = [];
 
-    const W = natW + pad * 2;
-    const H = natH + pad * 2;
-    const total = W * H;
+    for (let x = 0; x < canvasW; x++) {
+      if (!isBoundary[0 * canvasW + x]) queue.push(x, 0);
+      if (!isBoundary[(canvasH - 1) * canvasW + x]) queue.push(x, canvasH - 1);
+    }
+    for (let y = 0; y < canvasH; y++) {
+      if (!isBoundary[y * canvasW + 0]) queue.push(0, y);
+      if (!isBoundary[y * canvasW + (canvasW - 1)]) queue.push(canvasW - 1, y);
+    }
 
-    /* ========================================
-       STEP 1
-       원본 선화 캔버스
-    ======================================== */
+    let head = 0;
+    while (head < queue.length) {
+      const cx = queue[head++];
+      const cy = queue[head++];
+      const idx = cy * canvasW + cx;
 
-    const sourceCanvas = document.createElement('canvas');
-    sourceCanvas.width = W;
-    sourceCanvas.height = H;
+      if (isOutside[idx]) continue;
+      isOutside[idx] = 1;
 
-    const sourceCtx = sourceCanvas.getContext('2d', {
-      willReadFrequently: true
-    });
+      const neighbors = [
+        [cx + 1, cy],
+        [cx - 1, cy],
+        [cx, cy + 1],
+        [cx, cy - 1]
+      ];
 
-    sourceCtx.clearRect(0, 0, W, H);
-    sourceCtx.drawImage(
-      img,
-      pad,
-      pad,
-      natW,
-      natH
-    );
+      for (let i = 0; i < 4; i++) {
+        const nx = neighbors[i][0];
+        const ny = neighbors[i][1];
+        if (nx >= 0 && nx < canvasW && ny >= 0 && ny < canvasH) {
+          const nIdx = ny * canvasW + nx;
+          if (!isOutside[nIdx] && !isBoundary[nIdx]) {
+            queue.push(nx, ny);
+          }
+        }
+      }
+    }
 
-    const originalImageData =
-      sourceCtx.getImageData(0, 0, W, H);
+    // 4. 반가사유상 외곽선 내부 (!isOutside)의 닫힌 내부 영역들(Holes) 탐색
+    const innerRegionId = new Int32Array(totalPixels).fill(-1);
+    let currentRegion = 0;
+    const regionSizes = [];
 
-    const original =
-      originalImageData.data;
+    for (let y = 0; y < canvasH; y++) {
+      for (let x = 0; x < canvasW; x++) {
+        const idx = y * canvasW + x;
+        if (!isOutside[idx] && !isBoundary[idx] && innerRegionId[idx] === -1) {
+          const reg = currentRegion++;
+          regionSizes[reg] = 0;
 
+          const intQueue = [x, y];
+          let intHead = 0;
 
-    /* ========================================
-       STEP 2
-       선을 살짝 굵게 만들어 작은 틈만 막는다.
+          while (intHead < intQueue.length) {
+            const ix = intQueue[intHead++];
+            const iy = intQueue[intHead++];
+            const iIdx = iy * canvasW + ix;
 
-       blur를 강하게 사용하지 않는다.
-    ======================================== */
+            if (innerRegionId[iIdx] !== -1) continue;
+            innerRegionId[iIdx] = reg;
+            regionSizes[reg]++;
 
-    const boundary = new Uint8Array(total);
+            const neighbors = [
+              [ix + 1, iy],
+              [ix - 1, iy],
+              [ix, iy + 1],
+              [ix, iy - 1]
+            ];
 
-    for (let y = 0; y < H; y++) {
-
-      for (let x = 0; x < W; x++) {
-
-        const idx = y * W + x;
-        const alpha = original[idx * 4 + 3];
-
-        if (alpha > 20) {
-
-          /*
-           * 원본 픽셀 주변 1px만 확장
-           */
-
-          for (let oy = -1; oy <= 1; oy++) {
-
-            for (let ox = -1; ox <= 1; ox++) {
-
-              const nx = x + ox;
-              const ny = y + oy;
-
-              if (
-                nx >= 0 &&
-                nx < W &&
-                ny >= 0 &&
-                ny < H
-              ) {
-
-                boundary[
-                  ny * W + nx
-                ] = 1;
-
+            for (let k = 0; k < 4; k++) {
+              const nx = neighbors[k][0];
+              const ny = neighbors[k][1];
+              if (nx >= 0 && nx < canvasW && ny >= 0 && ny < canvasH) {
+                const nIdx = ny * canvasW + nx;
+                if (!isOutside[nIdx] && !isBoundary[nIdx] && innerRegionId[nIdx] === -1) {
+                  intQueue.push(nx, ny);
+                }
               }
             }
           }
@@ -1512,909 +1538,161 @@ function initSplashScreen() {
       }
     }
 
-
-    /* ========================================
-       STEP 3
-       캔버스 바깥쪽에서 Flood Fill
-
-       여기서 도달 가능한 영역은
-       무조건 "외부 배경"이다.
-    ======================================== */
-
-    const outside = new Uint8Array(total);
-
-    /*
-     * queue를 숫자 배열 하나로 처리해서
-     * 성능을 안정적으로 유지한다.
-     */
-
-    const queue = new Int32Array(total);
-
-    let queueStart = 0;
-    let queueEnd = 0;
-
-
-    function pushOutside(x, y) {
-
-      if (
-        x < 0 ||
-        x >= W ||
-        y < 0 ||
-        y >= H
-      ) return;
-
-      const idx = y * W + x;
-
-      if (outside[idx]) return;
-      if (boundary[idx]) return;
-
-      outside[idx] = 1;
-
-      queue[queueEnd++] = idx;
-    }
-
-
-    /*
-     * 네 모서리뿐 아니라
-     * 전체 캔버스 가장자리에서 시작
-     */
-
-    for (let x = 0; x < W; x++) {
-
-      pushOutside(x, 0);
-      pushOutside(x, H - 1);
-
-    }
-
-    for (let y = 0; y < H; y++) {
-
-      pushOutside(0, y);
-      pushOutside(W - 1, y);
-
-    }
-
-
-    while (queueStart < queueEnd) {
-
-      const idx =
-        queue[queueStart++];
-
-      const x =
-        idx % W;
-
-      const y =
-        Math.floor(idx / W);
-
-
-      pushOutside(x + 1, y);
-      pushOutside(x - 1, y);
-      pushOutside(x, y + 1);
-      pushOutside(x, y - 1);
-
-    }
-
-
-    /* ========================================
-       STEP 4
-       외부가 아닌 투명 영역을
-       각각 독립된 Region으로 분석
-    ======================================== */
-
-    const regionId =
-      new Int32Array(total);
-
-    regionId.fill(-1);
-
-    const regions = [];
-
-    let regionCount = 0;
-
-
-    for (let y = 0; y < H; y++) {
-
-      for (let x = 0; x < W; x++) {
-
-        const startIdx =
-          y * W + x;
-
-        if (outside[startIdx]) continue;
-        if (boundary[startIdx]) continue;
-        if (regionId[startIdx] !== -1) continue;
-
-
-        const id =
-          regionCount++;
-
-        let size = 0;
-
-        let minX = x;
-        let maxX = x;
-
-        let minY = y;
-        let maxY = y;
-
-        let sumX = 0;
-        let sumY = 0;
-
-
-        const regionQueue =
-          new Int32Array(total);
-
-        let rs = 0;
-        let re = 0;
-
-
-        regionId[startIdx] = id;
-
-        regionQueue[re++] =
-          startIdx;
-
-
-        while (rs < re) {
-
-          const idx =
-            regionQueue[rs++];
-
-          const px =
-            idx % W;
-
-          const py =
-            Math.floor(idx / W);
-
-
-          size++;
-
-          sumX += px;
-          sumY += py;
-
-          if (px < minX) minX = px;
-          if (px > maxX) maxX = px;
-
-          if (py < minY) minY = py;
-          if (py > maxY) maxY = py;
-
-
-          const neighbors = [
-            idx - 1,
-            idx + 1,
-            idx - W,
-            idx + W
-          ];
-
-
-          for (let n = 0; n < 4; n++) {
-
-            const ni =
-              neighbors[n];
-
-            if (
-              ni < 0 ||
-              ni >= total
-            ) continue;
-
-
-            const nx =
-              ni % W;
-
-            const ny =
-              Math.floor(ni / W);
-
-
-            /*
-             * 좌우 줄바꿈 방지
-             */
-
-            if (
-              Math.abs(nx - px) +
-              Math.abs(ny - py) !== 1
-            ) continue;
-
-
-            if (outside[ni]) continue;
-            if (boundary[ni]) continue;
-
-            if (
-              regionId[ni] !== -1
-            ) continue;
-
-
-            regionId[ni] = id;
-
-            regionQueue[re++] =
-              ni;
-
-          }
-        }
-
-
-        regions.push({
-
-          id,
-
-          size,
-
-          minX,
-          maxX,
-
-          minY,
-          maxY,
-
-          centerX:
-            sumX / size,
-
-          centerY:
-            sumY / size
-
-        });
+    // 팔-가슴-다리 사이의 주요 닫힌 내부 Hole 영역 1개 추출
+    let largestInnerHoleId = -1;
+    let maxHoleSize = 0;
+
+    for (let r = 0; r < regionSizes.length; r++) {
+      if (regionSizes[r] > maxHoleSize) {
+        maxHoleSize = regionSizes[r];
+        largestInnerHoleId = r;
       }
     }
 
-
-    /* ========================================
-       STEP 5
-       실제 몸체 영역 결정
-
-       중요:
-       "가장 큰 영역 = hole"이 아니다.
-
-       가장 큰 내부 영역을
-       반가사유상의 BODY로 사용한다.
-    ======================================== */
-
-    let bodyRegion = null;
-
-
-    for (const region of regions) {
-
-      if (
-        !bodyRegion ||
-        region.size > bodyRegion.size
-      ) {
-
-        bodyRegion = region;
-
-      }
-    }
-
-
-    if (!bodyRegion) {
-
-      console.warn(
-        '[Splash] body region not found'
-      );
-
-      return;
-    }
-
-
-    /* ========================================
-       STEP 6
-       Negative Space 판별
-
-       팔 / 가슴 / 다리 사이의 구멍은
-       몸체 내부 중앙 부근에 위치한다.
-
-       몸체보다 훨씬 작은
-       독립 Region만 hole 후보가 된다.
-    ======================================== */
-
-    const holes =
-      new Set();
-
-
-    const bodyWidth =
-      bodyRegion.maxX -
-      bodyRegion.minX;
-
-    const bodyHeight =
-      bodyRegion.maxY -
-      bodyRegion.minY;
-
-
-    for (const region of regions) {
-
-      if (
-        region.id ===
-        bodyRegion.id
-      ) continue;
-
-
-      /*
-       * 너무 작은 노이즈는 무시
-       */
-
-      if (region.size < 20)
-        continue;
-
-
-      /*
-       * 몸체 크기의 35%보다 큰 영역은
-       * hole로 보지 않는다.
-       */
-
-      if (
-        region.size >
-        bodyRegion.size * 0.35
-      ) continue;
-
-
-      /*
-       * 실제 몸체 Bounding Box 내부에
-       * 존재하는 영역만 hole 가능
-       */
-
-      const insideBodyBounds =
-
-        region.centerX >
-        bodyRegion.minX +
-
-        bodyWidth * 0.08
-
-        &&
-
-        region.centerX <
-        bodyRegion.maxX -
-
-        bodyWidth * 0.08
-
-        &&
-
-        region.centerY >
-        bodyRegion.minY +
-
-        bodyHeight * 0.08
-
-        &&
-
-        region.centerY <
-        bodyRegion.maxY -
-
-        bodyHeight * 0.08;
-
-
-      if (insideBodyBounds) {
-
-        holes.add(
-          region.id
-        );
-
-      }
-    }
-
-
-    /* ========================================
-       STEP 7
-       최종 마스크 생성
-    ======================================== */
-
-    const maskCanvas =
-      document.createElement('canvas');
-
-    maskCanvas.width = W;
-    maskCanvas.height = H;
-
-
-    const maskCtx =
-      maskCanvas.getContext('2d');
-
-
-    const maskImage =
-      maskCtx.createImageData(
-        W,
-        H
-      );
-
-
-    const mask =
-      maskImage.data;
-
-
-    for (let i = 0; i < total; i++) {
-
-      const p =
-        i * 4;
-
-
-      let fill = false;
-
-
-      /*
-       * 원본 외곽선
-       */
-
-      if (boundary[i]) {
-
-        fill = true;
-
-      }
-
-
-      /*
-       * BODY
-       */
-
-      if (
-        regionId[i] ===
-        bodyRegion.id
-      ) {
-
-        fill = true;
-
-      }
-
-
-      /*
-       * Negative Space는
-       * 반드시 다시 제거
-       */
-
-      if (
-        holes.has(
-          regionId[i]
-        )
-      ) {
-
-        fill = false;
-
-      }
-
-
-      /*
-       * 외부 배경은
-       * 최종적으로 무조건 투명
-       */
-
-      if (outside[i]) {
-
-        fill = false;
-
-      }
-
-
-      if (fill) {
-
-        mask[p] = 255;
-        mask[p + 1] = 255;
-        mask[p + 2] = 255;
-        mask[p + 3] = 255;
-
+    // 5. 최종 마스크 생성:
+    // - 외부 배경 (isOutside === 1) -> 0 Alpha (투명)
+    // - 팔/가슴/다리 사이의 닫힌 내부 Hole (innerRegionId === largestInnerHoleId) -> 0 Alpha (투명)
+    // - 머리, 목, 어깨, 팔, 가슴, 몸통, 무릎, 다리, 받침 등 몸체 전체 -> 255 Alpha (SOLID WHITE 100% GOLD FILL)
+    const finalMaskData = ctx1.createImageData(canvasW, canvasH);
+    const mData = finalMaskData.data;
+
+    for (let i = 0; i < totalPixels; i++) {
+      const pIdx = i * 4;
+
+      if (isOutside[i]) {
+        mData[pIdx + 3] = 0;
+      } else if (largestInnerHoleId !== -1 && innerRegionId[i] === largestInnerHoleId && maxHoleSize >= 15) {
+        mData[pIdx + 3] = 0;
       } else {
-
-        mask[p] = 0;
-        mask[p + 1] = 0;
-        mask[p + 2] = 0;
-        mask[p + 3] = 0;
-
+        mData[pIdx] = 255;
+        mData[pIdx + 1] = 255;
+        mData[pIdx + 2] = 255;
+        mData[pIdx + 3] = 255;
       }
     }
 
-
-    maskCtx.putImageData(
-      maskImage,
-      0,
-      0
-    );
-
-
-    const maskUrl =
-      maskCanvas.toDataURL(
-        'image/png'
-      );
-
-
-    callback(
-      maskUrl,
-      W,
-      H
-    );
+    ctx1.putImageData(finalMaskData, 0, 0);
+    const maskUrl = canvas1.toDataURL();
+    callback(maskUrl, canvasW, canvasH);
   }
 
-
-  /* ========================================
-     LOADING ANIMATION
-  ======================================== */
-
-  function startLoadingAnimation(
-    maskUrl,
-    SVG_W,
-    SVG_H
-  ) {
-
+  function startLoadingAnimation(maskUrl, SVG_W, SVG_H) {
     if (splashWaveSvg) {
-
-      splashWaveSvg.setAttribute(
-        'viewBox',
-        `0 0 ${SVG_W} ${SVG_H}`
-      );
-
-      splashWaveSvg.setAttribute(
-        'preserveAspectRatio',
-        'xMidYMid meet'
-      );
+      splashWaveSvg.setAttribute('viewBox', `0 0 ${SVG_W} ${SVG_H}`);
     }
-
 
     if (splashLiquidLayer) {
-
-      splashLiquidLayer.style.maskImage =
-        `url("${maskUrl}")`;
-
-      splashLiquidLayer.style.webkitMaskImage =
-        `url("${maskUrl}")`;
-
-
-      splashLiquidLayer.style.maskSize =
-        'contain';
-
-      splashLiquidLayer.style.webkitMaskSize =
-        'contain';
-
-
-      splashLiquidLayer.style.maskPosition =
-        'center';
-
-      splashLiquidLayer.style.webkitMaskPosition =
-        'center';
-
-
-      splashLiquidLayer.style.maskRepeat =
-        'no-repeat';
-
-      splashLiquidLayer.style.webkitMaskRepeat =
-        'no-repeat';
-
-
-      splashLiquidLayer.style.opacity =
-        '1';
+      splashLiquidLayer.style.maskImage = `url(${maskUrl})`;
+      splashLiquidLayer.style.webkitMaskImage = `url(${maskUrl})`;
+      splashLiquidLayer.style.maskSize = 'contain';
+      splashLiquidLayer.style.webkitMaskSize = 'contain';
+      splashLiquidLayer.style.maskPosition = 'center';
+      splashLiquidLayer.style.webkitMaskPosition = 'center';
+      splashLiquidLayer.style.maskRepeat = 'no-repeat';
+      splashLiquidLayer.style.webkitMaskRepeat = 'no-repeat';
+      splashLiquidLayer.style.opacity = '1';
     }
-
 
     let progress = 0;
     let phase = 0;
-
     let animationFrameId = null;
 
-    let completed = false;
-
-
+    const amplitude = 3.5;
     const frequency = 0.04;
 
-
     function renderFrame() {
+      if (progress < 100) {
+        progress += 0.85;
+        if (progress > 100) progress = 100;
+      }
 
-      if (completed) return;
-
-
-      /*
-       * 로딩 속도
-       */
-
-      progress += 0.75;
-
-      if (progress > 100)
-        progress = 100;
-
-
-      const currentPercent =
-        Math.floor(progress);
-
-
+      const currentPercent = Math.floor(progress);
       if (splashPercent) {
-
-        splashPercent.textContent =
-          `${currentPercent}%`;
-
+        splashPercent.textContent = `${currentPercent}%`;
       }
 
+      const fillY = SVG_H - (progress / 100) * SVG_H;
+      phase += 0.06;
 
-      /*
-       * 아래 -> 위
-       */
-
-      const fillY =
-        SVG_H -
-        (progress / 100) *
-        SVG_H;
-
-
-      phase += 0.065;
-
-
-      /*
-       * 마지막 5%에서
-       * 파도 자연스럽게 사라짐
-       */
-
-      let amplitude = 3.5;
-
-
+      // 95% -> 100% 구간에서 wave 진폭 감소 (100%에서 완전 제거)
+      let currentAmplitude = 3.5;
       if (progress > 95) {
-
-        amplitude =
-          3.5 *
-
-          ((100 - progress) / 5);
-
+        const factor = Math.max(0, (100 - progress) / 5);
+        currentAmplitude = 3.5 * factor;
       }
 
-
-      let pathD;
-
+      let pathD = `M 0 ${SVG_H}`;
 
       if (progress >= 100) {
-
-        /*
-         * 100%에서는
-         * 전체 사각형으로 채운다.
-
-         * 실제 표시 영역은
-         * CSS mask가 BODY만 남긴다.
-         */
-
-        pathD =
-          `M 0 0 ` +
-          `L ${SVG_W} 0 ` +
-          `L ${SVG_W} ${SVG_H} ` +
-          `L 0 ${SVG_H} Z`;
-
+        // 100% 완료 시 파도 애니메이션 완전 제거 및 solid fill 레이어로 전체 내부 채움
+        pathD = `M 0 ${SVG_H} L 0 0 L ${SVG_W} 0 L ${SVG_W} ${SVG_H} Z`;
       } else {
-
-        pathD =
-          `M 0 ${SVG_H} ` +
-          `L 0 ${fillY}`;
-
-
-        const step =
-          Math.max(
-            4,
-            Math.floor(
-              SVG_W / 70
-            )
-          );
-
-
-        for (
-          let x = 0;
-          x <= SVG_W;
-          x += step
-        ) {
-
-          const waveY =
-
-            fillY +
-
-            Math.sin(
-              x * frequency +
-              phase
-            ) *
-
-            amplitude;
-
-
-          pathD +=
-            ` L ${x} ${waveY.toFixed(2)}`;
-
+        pathD += ` L 0 ${fillY.toFixed(2)}`;
+        const step = 6;
+        for (let x = 0; x <= SVG_W; x += step) {
+          const waveY = fillY + Math.sin(x * frequency + phase) * currentAmplitude;
+          pathD += ` L ${x} ${waveY.toFixed(2)}`;
         }
-
-
-        pathD +=
-          ` L ${SVG_W} ${SVG_H} Z`;
+        pathD += ` L ${SVG_W} ${SVG_H} Z`;
       }
 
+      splashWavePath.setAttribute('d', pathD);
 
-      splashWavePath.setAttribute(
-        'd',
-        pathD
-      );
-
-
-      /*
-       * 작은 금빛 입자
-       */
-
-      if (
-        progress > 8 &&
-        progress < 94 &&
-        Math.random() < 0.28
-      ) {
-
-        spawnSplashParticle(
-          fillY
-        );
-
+      if (progress > 5 && progress < 95 && Math.random() < 0.35) {
+        spawnSplashParticle(fillY);
       }
-
 
       if (progress >= 100) {
-
-        completed = true;
-
         onSplashComplete();
-
         return;
       }
 
-
-      animationFrameId =
-        requestAnimationFrame(
-          renderFrame
-        );
+      animationFrameId = requestAnimationFrame(renderFrame);
     }
 
+    function spawnSplashParticle(fillY) {
+      if (!splashParticles) return;
+      const particle = document.createElement('div');
+      particle.className = 'splash-particle-dot';
 
-    function spawnSplashParticle(
-      fillY
-    ) {
+      const randomX = Math.random() * 70 + 15;
+      const randomY = (fillY / SVG_H) * 100 + (Math.random() * 6 - 3);
 
-      if (!splashParticles)
-        return;
+      particle.style.left = `${randomX}%`;
+      particle.style.top = `${randomY}%`;
 
-
-      const particle =
-        document.createElement(
-          'div'
-        );
-
-
-      particle.className =
-        'splash-particle-dot';
-
-
-      const randomX =
-        Math.random() * 60 + 20;
-
-
-      const randomY =
-
-        (fillY / SVG_H) *
-        100 +
-
-        (Math.random() * 5 - 2.5);
-
-
-      particle.style.left =
-        `${randomX}%`;
-
-      particle.style.top =
-        `${randomY}%`;
-
-
-      splashParticles.appendChild(
-        particle
-      );
-
+      splashParticles.appendChild(particle);
 
       setTimeout(() => {
-
-        particle.remove();
-
-      }, 1100);
+        if (particle.parentNode) {
+          particle.parentNode.removeChild(particle);
+        }
+      }, 1200);
     }
-
 
     function onSplashComplete() {
-
-      /*
-       * 100% 상태를 잠깐 보여준다.
-       */
-
-      if (splashPercent) {
-
-        splashPercent.textContent =
-          '100%';
-
-      }
-
-
       if (statueWrap) {
-
-        statueWrap.style.transition =
-          'filter 0.55s ease';
-
-        statueWrap.style.filter =
-          'drop-shadow(0 0 24px rgba(241, 213, 154, 0.9)) brightness(1.12)';
-
+        statueWrap.style.transition = 'filter 0.5s ease';
+        statueWrap.style.filter = 'drop-shadow(0 0 24px rgba(241, 213, 154, 0.95)) brightness(1.15)';
       }
-
 
       setTimeout(() => {
-
-        splashScreen.style.transition =
-          'opacity 0.8s cubic-bezier(0.19, 1, 0.22, 1)';
-
-        splashScreen.style.opacity =
-          '0';
-
-        splashScreen.style.pointerEvents =
-          'none';
-
+        splashScreen.style.opacity = '0';
+        splashScreen.style.pointerEvents = 'none';
 
         setTimeout(() => {
-
-          if (animationFrameId) {
-
-            cancelAnimationFrame(
-              animationFrameId
-            );
-
-          }
-
-
+          if (animationFrameId) cancelAnimationFrame(animationFrameId);
           splashScreen.remove();
-
         }, 850);
-
-      }, 500);
+      }, 450);
     }
 
-
-    animationFrameId =
-      requestAnimationFrame(
-        renderFrame
-      );
+    animationFrameId = requestAnimationFrame(renderFrame);
   }
 
-
-  /* ========================================
-     START
-  ======================================== */
-
-  function start() {
-
-    createSolidMask(
-      imgSource,
-      startLoadingAnimation
-    );
-
-  }
-
-
-  if (
-    imgSource.complete &&
-    imgSource.naturalWidth > 0
-  ) {
-
-    start();
-
+  if (imgSource.complete && imgSource.naturalWidth !== 0) {
+    createSolidMask(imgSource, startLoadingAnimation);
   } else {
-
-    imgSource.addEventListener(
-      'load',
-      start,
-      {
-        once: true
-      }
-    );
-
-
-    imgSource.addEventListener(
-      'error',
-      () => {
-
-        console.warn(
-          '[Splash] splash.png load failed'
-        );
-
-
-        /*
-         * 이미지 오류 때문에
-         * 사이트 자체가 막히지 않도록 처리
-         */
-
-        splashScreen.style.opacity =
-          '0';
-
-
-        setTimeout(() => {
-
-          splashScreen.remove();
-
-        }, 500);
-
-      },
-      {
-        once: true
-      }
-    );
+    imgSource.onload = () => createSolidMask(imgSource, startLoadingAnimation);
   }
 }
