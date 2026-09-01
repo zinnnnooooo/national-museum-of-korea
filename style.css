@@ -3786,7 +3786,7 @@ body {
   width: 42px; /* 약 17% 크기 상향 (36px -> 42px) */
   height: 42px;
   pointer-events: none;
-  z-index: 99999;
+  z-index: 2000000;
   transform: translate(-50%, -50%);
   will-change: transform;
   filter: drop-shadow(0 0 6px rgba(212, 175, 106, 0.65)); /* Museum Gold 글로우 */
@@ -3817,7 +3817,7 @@ body {
   top: 0;
   left: 0;
   pointer-events: none;
-  z-index: 99998;
+  z-index: 1999999;
   transform: translate(-50%, -50%);
   will-change: transform, opacity;
 }
@@ -3953,7 +3953,28 @@ body {
   justify-content: center;
   overflow: hidden;
   opacity: 1;
-  transition: opacity 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+  transition: opacity 0.7s cubic-bezier(0.19, 1, 0.22, 1), filter 0.7s ease;
+}
+
+.splash-screen.is-crossfading {
+  opacity: 0;
+  filter: brightness(0.92);
+}
+
+.hero-crossfade-entering {
+  transform: scale(1.015);
+  opacity: 0;
+  filter: brightness(0.95);
+  will-change: transform, opacity, filter;
+}
+
+.hero-crossfade-entering.is-active {
+  transform: scale(1);
+  opacity: 1;
+  filter: brightness(1);
+  transition: transform 0.7s cubic-bezier(0.19, 1, 0.22, 1),
+              opacity 0.7s cubic-bezier(0.19, 1, 0.22, 1),
+              filter 0.7s ease;
 }
 
 .splash-frame-img {
@@ -3972,12 +3993,31 @@ body {
   box-shadow: none;
 }
 
+.splash-gemini-cover {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  width: 32vw;
+  height: 25vh;
+  min-width: 280px;
+  min-height: 140px;
+  background: #000000;
+  z-index: 999999;
+  pointer-events: none;
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
 .splash-content {
-  position: relative;
+  position: absolute;
+  top: 50%;
+  left: 20vw;
+  transform: translateY(-50%);
   z-index: 10;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 2.2rem;
   pointer-events: none;
 }
@@ -3985,7 +4025,7 @@ body {
 .splash-counter {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.4rem;
 }
 

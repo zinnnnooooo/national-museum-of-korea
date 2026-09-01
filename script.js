@@ -1794,16 +1794,37 @@ function initSplashScreen() {
             splashPercent.textContent = '100%';
           }
 
-          // Hold on last frame briefly, then smoothly fade out splash screen
-          setTimeout(() => {
-            splashScreen.style.transition = 'opacity 0.85s cubic-bezier(0.19, 1, 0.22, 1)';
-            splashScreen.style.opacity = '0';
-            splashScreen.style.pointerEvents = 'none';
+          const heroEl = document.getElementById('hero');
 
+          // 0.00 ~ 0.10s: Hold last frame briefly
+          setTimeout(() => {
+            // 0.10 ~ 0.80s: Soft Crossfade + Hero Micro Zoom (1.015 -> 1) + Brightness transition
+            if (splashScreen) {
+              splashScreen.classList.add('is-crossfading');
+              splashScreen.style.pointerEvents = 'none';
+            }
+
+            if (heroEl) {
+              heroEl.classList.add('hero-crossfade-entering');
+              void heroEl.offsetWidth; // force reflow
+              heroEl.classList.add('is-active');
+            }
+
+            // 0.80s: Transition completed - clean up DOM and inline styles
             setTimeout(() => {
-              splashScreen.remove();
-            }, 850);
-          }, 350);
+              if (heroEl) {
+                heroEl.classList.remove('hero-crossfade-entering', 'is-active');
+                heroEl.style.transform = '';
+                heroEl.style.transition = '';
+                heroEl.style.opacity = '';
+                heroEl.style.filter = '';
+              }
+              if (splashScreen) {
+                splashScreen.remove();
+              }
+            }, 700);
+          }, 100);
+
           return;
         }
       }
