@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>국립중앙박물관 | National Museum of Korea</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Noto+Serif+KR:wght@500;600&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<header class="site-header" id="siteHeader">
+  <div class="container site-header__inner">
+    <a href="#" class="logo">
+      <span class="logo__mark">NMK</span>
+      <span class="logo__name">
+        <span>NATIONAL MUSEUM</span>
+        <span>OF KOREA</span>
+      </span>
+    </a>
+
+    <nav class="main-nav">
+      <a href="#">Exhibitions</a>
+      <a href="#">Visit &amp; Book</a>
+      <a href="#">Members</a>
+      <a href="#">Education</a>
+      <a href="#">Research</a>
+      <a href="#">About</a>
+    </nav>
+
+    <div class="header-utils">
+      <button class="lang" type="button">ENG
+        <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.2"/></svg>
+      </button>
+      <button type="button" aria-label="검색">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      </button>
+      <button type="button" aria-label="메뉴">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="none"><path d="M0 1h18M0 6h18M0 11h18" stroke="currentColor" stroke-width="1.2"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     HERO  (Scroll Scrubbing 예정 구간 — 현 단계는 정적 연출)
+     실제 영상 전달 시 hero-artifact 자리에 <video class="hero-video">
+     를 배치하고 heroScrub.js에서 currentTime을 제어하도록 확장.
+     ============================================================ -->
+<section class="hero-scrub-wrapper" id="hero">
+  <div class="hero-sticky">
+    <div class="hero-canvas-container">
+      <canvas id="heroCanvas"></canvas>
+      <div class="hero-video-overlay" aria-hidden="true"></div>
+    </div>
+
+    <div class="container hero-top" data-reveal>
+      <div class="hero-copy">
+        <h1 class="hero-copy__title">The Scent of Baekje,<br>A Thousand Years in Time</h1>
+        <p class="hero-copy__kr">백제금동대향로</p>
+        <p class="hero-copy__caption">Gilt-Bronze Incense Burner of Baekje</p>
+        <span class="hero-scroll-hint">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v11M2 8l5 5 5-5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          스크롤 내리기
+        </span>
+      </div>
+    </div>
+
+    <div class="container hero-bottom">
+      <form class="hero-search" data-reveal>
+        <div class="hero-search__field">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="8" cy="8" r="6.2" stroke="currentColor" stroke-width="1.4"/><path d="M12.4 12.4L17 17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          <input type="text" placeholder="Search">
+        </div>
+      </form>
+
+      <nav class="hero-quick-nav" data-reveal>
+        <a class="hero-quick-nav__item" href="#">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="14" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M3 9h18" stroke="currentColor" stroke-width="1.3"/></svg>
+          <span class="hero-quick-nav__text">
+            <strong>View Exhibitions</strong>
+            <span>Check current and upcoming exhibitions</span>
+          </span>
+        </a>
+        <a class="hero-quick-nav__item" href="#">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="15" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.3"/></svg>
+          <span class="hero-quick-nav__text">
+            <strong>Book a Visit</strong>
+            <span>Schedule your visit with ease</span>
+          </span>
+        </a>
+        <a class="hero-quick-nav__item" href="#">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="10" cy="10" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M15 15l5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          <span class="hero-quick-nav__text">
+            <strong>Search Artifacts</strong>
+            <span>Discover the collection of the National Museum of Korea</span>
+          </span>
+        </a>
+        <a class="hero-quick-nav__item" href="#">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z" stroke="currentColor" stroke-width="1.3"/><circle cx="12" cy="9.5" r="2.3" stroke="currentColor" stroke-width="1.3"/></svg>
+          <span class="hero-quick-nav__text">
+            <strong>Directions</strong>
+            <span>Find our location and transportation info</span>
+          </span>
+        </a>
+        <div class="hero-quick-nav__video">
+          <span class="hero-quick-nav__video-btn">
+            <svg width="10" height="12" viewBox="0 0 10 12" fill="currentColor"><path d="M0 0l10 6-10 6z"/></svg>
+          </span>
+          <span class="hero-quick-nav__text">
+            <strong>Museum Introduction Video</strong>
+            <span>PLAY</span>
+          </span>
+        </div>
+      </nav>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 01 — Discover Our Legacy
+     ============================================================ -->
+<section class="section" id="legacy">
+  <div class="container">
+    <span class="label-overline" data-reveal>01 · EXPLORE THE COLLECTION</span>
+
+    <div class="legacy-grid">
+      <div data-reveal>
+        <h2 class="section-title">Discover<br>Our Legacy</h2>
+        <p class="section-desc">Delve into the National Museum of Korea's vast collection, discovering the artifacts and the stories they carry through time.</p>
+
+        <div class="legacy-search">
+          <input type="text" placeholder="Search the collection">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        </div>
+
+        <div class="category-tags" id="categoryTags">
+          <button type="button" class="is-active">Pensive Bodhisattva</button>
+          <button type="button">Gold Crown of Silla</button>
+          <button type="button">Baekje Incense Burner</button>
+          <button type="button">Sungnyemun</button>
+          <button type="button">Daedongyeojido</button>
+          <button type="button">Genie Paintings</button>
+          <button type="button">Goryeo Celadon</button>
+          <button type="button">Silk Bronze Buddha</button>
+        </div>
+
+        <div class="artifact-caption">
+          <p class="artifact-caption__title">Gilt-bronze Pensive Bodhisattva</p>
+          <p class="artifact-caption__meta">Three Kingdoms Period, 7th Century</p>
+          <a class="link-arrow" href="#">EXPLORE IN
+            <svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5h10M6 1l5 4-5 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="artifact-showcase" data-reveal="scale">
+        <div class="artifact-frame">
+          <img src="design/art_1.jpg" alt="Gilt-bronze Pensive Bodhisattva" class="artifact-image">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 02a — Every Object Holds a Story
+     ============================================================ -->
+<section class="section" id="story">
+  <div class="container">
+    <span class="label-overline" data-reveal>02 · HERITAGE OF KOREA</span>
+
+    <div class="story-head" data-reveal>
+      <h2 class="section-title">Every Object Holds<br>a Story</h2>
+      <span class="story-search-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      </span>
+    </div>
+
+    <div class="story-media" data-reveal="scale">
+      <img src="design/art_2.png" alt="The Masterpieces" class="story-media__bg">
+      <div class="story-media__overlay">
+        <h3>The Masterpieces</h3>
+        <p>Timeless masterpieces shaped by skilled artisans. Discover the beauty of Korean heritage.</p>
+        <div class="story-nav">
+          <button type="button" aria-label="이전" id="storyPrev">
+            <svg width="14" height="12" viewBox="0 0 14 12" fill="none"><path d="M13 6H1M6 1L1 6l5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button type="button" aria-label="다음" id="storyNext">
+            <svg width="14" height="12" viewBox="0 0 14 12" fill="none"><path d="M1 6h12M8 1l5 5-5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 02b — Ancient Heritage Meets Contemporary Design
+     ============================================================ -->
+<section class="section section--tight-top" id="heritage">
+  <div class="container">
+    <span class="label-overline" data-reveal>02 · HERITAGE OF KOREA</span>
+    <h2 class="section-title" data-reveal>Ancient Heritage Meets<br>Contemporary Design</h2>
+
+    <div class="heritage-grid">
+      <img class="heritage-image" src="design/art_3.png" alt="Heritage Ceramic Collection" data-reveal="scale">
+      <div class="heritage-text" data-reveal>
+        <p class="heritage-text__eyebrow">Heritage Ceramic Collection</p>
+        <p class="heritage-text__desc">Inspired by traditional Korean ceramics, this collection brings timeless forms and beauty into contemporary life.</p>
+        <a class="link-arrow" href="#">DISCOVER MU : DS
+          <svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5h10M6 1l5 4-5 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION — Museum Information
+     ============================================================ -->
+<section class="section" id="info">
+  <div class="container">
+    <span class="label-overline" data-reveal>02 · HERITAGE OF KOREA</span>
+
+    <div class="info-grid">
+      <ul class="info-links" data-reveal>
+        <li><a href="#">Exhibitions
+          <svg width="14" height="12" viewBox="0 0 14 12" fill="none"><path d="M1 6h12M8 1l5 5-5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a></li>
+        <li><a href="#">Visit
+          <svg width="14" height="12" viewBox="0 0 14 12" fill="none"><path d="M1 6h12M8 1l5 5-5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a></li>
+        <li><a href="#">Family
+          <svg width="14" height="12" viewBox="0 0 14 12" fill="none"><path d="M1 6h12M8 1l5 5-5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a></li>
+        <li><a href="#">Directions
+          <svg width="14" height="12" viewBox="0 0 14 12" fill="none"><path d="M1 6h12M8 1l5 5-5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a></li>
+      </ul>
+
+      <img class="museum-building-image" src="design/art_4.png" alt="National Museum of Korea Building" data-reveal="scale">
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <a href="#" class="logo">
+      <span class="logo__mark">NMK</span>
+      <span class="logo__name">
+        <span>NATIONAL MUSEUM</span>
+        <span>OF KOREA</span>
+      </span>
+    </a>
+
+    <nav class="footer-links">
+      <a href="#">Visitor Information</a>
+      <a href="#">Directions</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Privacy Policy</a>
+    </nav>
+
+    <div class="footer-icons">
+      <button type="button" aria-label="언어 선택">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="currentColor" stroke-width="1.2"/><path d="M1.5 9h15M9 1.5c2.5 2 2.5 13 0 15M9 1.5c-2.5 2-2.5 13 0 15" stroke="currentColor" stroke-width="1.2"/></svg>
+      </button>
+      <button type="button" aria-label="공유">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="13" cy="3" r="2" stroke="currentColor" stroke-width="1.2"/><circle cx="3" cy="8" r="2" stroke="currentColor" stroke-width="1.2"/><circle cx="13" cy="13" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M4.7 7l6.6-3M4.7 9l6.6 3" stroke="currentColor" stroke-width="1.2"/></svg>
+      </button>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

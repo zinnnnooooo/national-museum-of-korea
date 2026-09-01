@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE ETERNAL FLAME — Reliquary of the Champion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Cinzel:wght@400;500;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-mark">
+      <svg viewBox="0 0 40 40" width="34" height="34">
+        <path d="M20 0 C20 12, 28 20, 40 20 C28 20, 20 28, 20 40 C20 28, 12 20, 0 20 C12 20, 20 12, 20 0 Z" fill="currentColor"/>
+      </svg>
+    </div>
+    <div class="loader-track"><div class="loader-fill" id="loaderFill"></div></div>
+    <div class="loader-label"><span id="loaderPct">0</span>% — ENTERING THE SANCTUM</div>
+  </div>
+
+  <!-- Pinned scrubbing stage -->
+  <section id="stage">
+    <canvas id="scrubCanvas"></canvas>
+    <div class="vignette"></div>
+    <div class="grain"></div>
+
+    <!-- progress rail -->
+    <div class="rail">
+      <span class="rail-label">I</span>
+      <div class="rail-track"><div class="rail-fill" id="railFill"></div></div>
+      <span class="rail-label">IV</span>
+    </div>
+
+    <!-- scroll cue -->
+    <div class="scrollcue" id="scrollcue">
+      <span>SCROLL</span>
+      <div class="scrollcue-line"></div>
+    </div>
+
+    <!-- Text beats, opacity driven by scroll progress -->
+    <div class="beat beat--eyebrow" data-in="0.00" data-out="0.09">
+      <p class="eyebrow">CHAPTER I — THE VESSEL</p>
+    </div>
+
+    <div class="beat beat--title" data-in="0.00" data-out="0.12">
+      <p class="kicker">A reliquary cast in gold, kept beneath a single shaft of light.</p>
+      <h1>THE&nbsp;ETERNAL<br>FLAME</h1>
+      <p class="sub">Every mark upon it was earned. None of it was given.</p>
+    </div>
+
+    <div class="beat beat--left" data-in="0.20" data-out="0.42">
+      <p class="eyebrow">CHAPTER II — THE AGE OF FIRE</p>
+      <h2>Wrought from<br>the embers of<br>every final battle.</h2>
+    </div>
+
+    <div class="beat beat--right" data-in="0.46" data-out="0.66">
+      <p class="eyebrow">CHAPTER III — THE ASCENT</p>
+      <h2>The phoenix does<br>not rest.<br>It rises again.</h2>
+      <p class="sub sub--right">A single form, cast in one continuous flame — wings spread over the peak it was forged to guard.</p>
+    </div>
+
+    <div class="beat beat--center-low" data-in="0.72" data-out="0.90">
+      <p class="eyebrow">CHAPTER IV — THE RETURN</p>
+      <h2>It is lowered back<br>into silence,<br>until the next is worthy.</h2>
+    </div>
+
+    <div class="beat beat--closing" data-in="0.93" data-out="1.01">
+      <p class="closing-mark">✦</p>
+      <h2 class="closing-title">ONE FLAME.<br>ONE NAME.</h2>
+      <p class="sub">The sanctum closes. The legend does not.</p>
+      <a class="cta" href="#end">Enter the Hall of Champions</a>
+    </div>
+
+  </section>
+
+  <!-- Landing after the scrub sequence ends -->
+  <section id="end">
+    <div class="end-inner">
+      <p class="closing-mark">✦</p>
+      <h3>THE SANCTUM</h3>
+      <p>Built for the one flame that outlasts every season.</p>
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>

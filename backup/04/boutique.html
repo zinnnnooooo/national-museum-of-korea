@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Museum Boutique | 국립중앙박물관</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Noto+Serif+KR:wght@500;600&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="boutique.css">
+</head>
+<body class="boutique-body">
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<header class="site-header site-header--static" id="siteHeader">
+  <div class="container site-header__inner">
+    <a href="index.html" class="logo">
+      <span class="logo__mark">NMK</span>
+      <span class="logo__name">
+        <span>NATIONAL MUSEUM</span>
+        <span>OF KOREA</span>
+      </span>
+    </a>
+
+    <nav class="main-nav">
+      <a href="index.html">Exhibitions</a>
+      <a href="index.html">Visit &amp; Book</a>
+      <a href="#" class="is-active">Boutique</a>
+      <a href="index.html">Education</a>
+      <a href="index.html">Research</a>
+      <a href="index.html">About</a>
+    </nav>
+
+    <div class="header-utils">
+      <button class="lang" type="button">ENG
+        <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.2"/></svg>
+      </button>
+      <button type="button" aria-label="검색">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      </button>
+      <button type="button" aria-label="메뉴">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="none"><path d="M0 1h18M0 6h18M0 11h18" stroke="currentColor" stroke-width="1.2"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     BOUTIQUE HERO
+     ============================================================ -->
+<section class="boutique-hero">
+  <div class="boutique-hero__bg"></div>
+  <div class="container boutique-hero__inner">
+    <div class="boutique-hero__content">
+      <span class="boutique-hero__label">MUSEUM BOUTIQUE</span>
+      <h1 class="boutique-hero__title">PREMIUM CULTURAL GOODS</h1>
+      
+      <div class="boutique-hero__featured">
+        <span class="featured-sub">MASTERPIECE COLLECTION</span>
+        <h2 class="featured-name">Pensive Bodhisattva</h2>
+        <span class="featured-desc">Limited Gold Edition (replica, 83rd National Treasure of Korea)</span>
+        <p class="featured-price">₩ 2,850,000</p>
+        <button class="boutique-btn boutique-btn--gold" type="button">
+          VIEW COLLECTION
+          <svg width="14" height="12" viewBox="0 0 14 12" fill="none"><path d="M1 6h12M8 1l5 5-5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+    
+    <div class="boutique-hero__media">
+      <!-- Traditional cloud background graphics -->
+      <div class="traditional-clouds"></div>
+      <div class="boutique-hero__image-wrap">
+        <img src="design/art_1.jpg" alt="Pensive Bodhisattva Gold Edition">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FILTER & SHOP GRID
+     ============================================================ -->
+<section class="boutique-shop">
+  <div class="container">
+    <!-- Category Filter Pills -->
+    <div class="boutique-filters" id="boutiqueFilters">
+      <button class="filter-pill is-active" data-filter="all">ALL</button>
+      <button class="filter-pill" data-filter="miniatures">MINIATURES &amp; STATUES</button>
+      <button class="filter-pill" data-filter="ceramics">CERAMICS</button>
+      <button class="filter-pill" data-filter="fashion">FASHION &amp; ACCESSORIES</button>
+      <button class="filter-pill" data-filter="living">LIVING</button>
+      <button class="filter-pill" data-filter="treasures">NATIONAL TREASURES SERIES</button>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="boutique-grid" id="boutiqueGrid">
+      <!-- Dynamically generated via JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <a href="index.html" class="logo">
+      <span class="logo__mark">NMK</span>
+      <span class="logo__name">
+        <span>NATIONAL MUSEUM</span>
+        <span>OF KOREA</span>
+      </span>
+    </a>
+
+    <nav class="footer-links">
+      <a href="index.html">Visitor Information</a>
+      <a href="index.html">Directions</a>
+      <a href="index.html">Terms of Service</a>
+      <a href="index.html">Privacy Policy</a>
+    </nav>
+
+    <div class="footer-icons">
+      <button type="button" aria-label="언어 선택">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7.5" stroke="currentColor" stroke-width="1.2"/><path d="M1.5 9h15M9 1.5c2.5 2 2.5 13 0 15M9 1.5c-2.5 2-2.5 13 0 15" stroke="currentColor" stroke-width="1.2"/></svg>
+      </button>
+      <button type="button" aria-label="공유">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="13" cy="3" r="2" stroke="currentColor" stroke-width="1.2"/><circle cx="3" cy="8" r="2" stroke="currentColor" stroke-width="1.2"/><circle cx="13" cy="13" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M4.7 7l6.6-3M4.7 9l6.6 3" stroke="currentColor" stroke-width="1.2"/></svg>
+      </button>
+    </div>
+  </div>
+</footer>
+
+<script src="boutique.js"></script>
+</body>
+</html>
