@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCustomCursor();
   initHeroScrub();
   initHeaderScroll();
+  initHeaderDropdown();
   initScrollReveal();
   initCategoryTags();
   initStoryNav();
@@ -36,6 +37,81 @@ document.addEventListener('DOMContentLoaded', () => {
   initSearchPopup();
   initHeritageSlider();
 });
+
+/* ---------- Header: Mega Dropdown ---------- */
+function initHeaderDropdown() {
+  const headerEl = document.getElementById('siteHeader');
+  const dropdownEl = document.getElementById('headerDropdown');
+  if (!headerEl || !dropdownEl) return;
+
+  const navLinks = headerEl.querySelectorAll('.main-nav a[data-nav]');
+  const panes = dropdownEl.querySelectorAll('.dropdown-pane');
+  let closeTimer = null;
+
+  function showPane(navTarget) {
+    if (closeTimer) {
+      clearTimeout(closeTimer);
+      closeTimer = null;
+    }
+
+    let targetFound = false;
+    panes.forEach(pane => {
+      if (pane.dataset.pane === navTarget) {
+        pane.classList.add('is-active');
+        targetFound = true;
+      } else {
+        pane.classList.remove('is-active');
+      }
+    });
+
+    navLinks.forEach(link => {
+      if (link.getAttribute('data-nav') === navTarget) {
+        link.classList.add('is-active');
+      } else {
+        link.classList.remove('is-active');
+      }
+    });
+
+    if (targetFound) {
+      dropdownEl.classList.add('is-active');
+      dropdownEl.setAttribute('aria-hidden', 'false');
+      headerEl.classList.add('has-dropdown-open');
+    }
+  }
+
+  function scheduleClose() {
+    if (closeTimer) clearTimeout(closeTimer);
+    closeTimer = setTimeout(() => {
+      dropdownEl.classList.remove('is-active');
+      dropdownEl.setAttribute('aria-hidden', 'true');
+      headerEl.classList.remove('has-dropdown-open');
+      panes.forEach(pane => pane.classList.remove('is-active'));
+      navLinks.forEach(link => link.classList.remove('is-active'));
+    }, 150);
+  }
+
+  navLinks.forEach(link => {
+    link.addEventListener('mouseenter', () => {
+      const navTarget = link.getAttribute('data-nav');
+      showPane(navTarget);
+    });
+  });
+
+  headerEl.addEventListener('mouseleave', () => {
+    scheduleClose();
+  });
+
+  dropdownEl.addEventListener('mouseenter', () => {
+    if (closeTimer) {
+      clearTimeout(closeTimer);
+      closeTimer = null;
+    }
+  });
+
+  dropdownEl.addEventListener('mouseleave', () => {
+    scheduleClose();
+  });
+}
 
 /* ---------- Header: 스크롤 시 배경 전환 ---------- */
 function initHeaderScroll() {
@@ -1403,14 +1479,11 @@ function initHeritageSlider() {
 function initSplashScreen() {
   const splashScreen = document.getElementById('splashScreen');
   const splashPercent = document.getElementById('splashPercent');
-  const splashWavePath = document.getElementById('splashWavePath');
-  const splashParticles = document.getElementById('splashParticles');
+  const splashFrameImg = document.getElementById('splashFrameImg');
   const statueWrap = document.getElementById('splashStatueWrap');
-  const splashLiquidLayer = document.getElementById('splashLiquidLayer');
   const imgSource = document.getElementById('splashImgSource');
-  const splashWaveSvg = document.querySelector('.splash-wave-svg');
 
-  if (!splashScreen || !splashWavePath || !imgSource) return;
+  if (!splashScreen) return;
 
   /*
    * splash.png은 선화 이미지다.
@@ -1431,15 +1504,9 @@ function initSplashScreen() {
     }
 
     const pad = 16;
-
     const W = natW + pad * 2;
     const H = natH + pad * 2;
     const total = W * H;
-
-    /* ========================================
-       STEP 1
-       원본 선화 캔버스
-    ======================================== */
 
     const sourceCanvas = document.createElement('canvas');
     sourceCanvas.width = W;
@@ -1450,61 +1517,23 @@ function initSplashScreen() {
     });
 
     sourceCtx.clearRect(0, 0, W, H);
-    sourceCtx.drawImage(
-      img,
-      pad,
-      pad,
-      natW,
-      natH
-    );
+    sourceCtx.drawImage(img, pad, pad, natW, natH);
 
-    const originalImageData =
-      sourceCtx.getImageData(0, 0, W, H);
-
-    const original =
-      originalImageData.data;
-
-
-    /* ========================================
-       STEP 2
-       선을 살짝 굵게 만들어 작은 틈만 막는다.
-
-       blur를 강하게 사용하지 않는다.
-    ======================================== */
-
+    const originalImageData = sourceCtx.getImageData(0, 0, W, H);
+    const original = originalImageData.data;
     const boundary = new Uint8Array(total);
 
     for (let y = 0; y < H; y++) {
-
       for (let x = 0; x < W; x++) {
-
         const idx = y * W + x;
         const alpha = original[idx * 4 + 3];
-
         if (alpha > 20) {
-
-          /*
-           * 원본 픽셀 주변 1px만 확장
-           */
-
           for (let oy = -1; oy <= 1; oy++) {
-
             for (let ox = -1; ox <= 1; ox++) {
-
               const nx = x + ox;
               const ny = y + oy;
-
-              if (
-                nx >= 0 &&
-                nx < W &&
-                ny >= 0 &&
-                ny < H
-              ) {
-
-                boundary[
-                  ny * W + nx
-                ] = 1;
-
+              if (nx >= 0 && nx < W && ny >= 0 && ny < H) {
+                boundary[ny * W + nx] = 1;
               }
             }
           }
@@ -1512,909 +1541,276 @@ function initSplashScreen() {
       }
     }
 
-
-    /* ========================================
-       STEP 3
-       캔버스 바깥쪽에서 Flood Fill
-
-       여기서 도달 가능한 영역은
-       무조건 "외부 배경"이다.
-    ======================================== */
-
     const outside = new Uint8Array(total);
-
-    /*
-     * queue를 숫자 배열 하나로 처리해서
-     * 성능을 안정적으로 유지한다.
-     */
-
     const queue = new Int32Array(total);
-
     let queueStart = 0;
     let queueEnd = 0;
 
-
     function pushOutside(x, y) {
-
-      if (
-        x < 0 ||
-        x >= W ||
-        y < 0 ||
-        y >= H
-      ) return;
-
+      if (x < 0 || x >= W || y < 0 || y >= H) return;
       const idx = y * W + x;
-
       if (outside[idx]) return;
       if (boundary[idx]) return;
-
       outside[idx] = 1;
-
       queue[queueEnd++] = idx;
     }
 
-
-    /*
-     * 네 모서리뿐 아니라
-     * 전체 캔버스 가장자리에서 시작
-     */
-
     for (let x = 0; x < W; x++) {
-
       pushOutside(x, 0);
       pushOutside(x, H - 1);
-
     }
-
     for (let y = 0; y < H; y++) {
-
       pushOutside(0, y);
       pushOutside(W - 1, y);
-
     }
 
-
     while (queueStart < queueEnd) {
-
-      const idx =
-        queue[queueStart++];
-
-      const x =
-        idx % W;
-
-      const y =
-        Math.floor(idx / W);
-
+      const idx = queue[queueStart++];
+      const x = idx % W;
+      const y = Math.floor(idx / W);
 
       pushOutside(x + 1, y);
       pushOutside(x - 1, y);
       pushOutside(x, y + 1);
       pushOutside(x, y - 1);
-
     }
 
-
-    /* ========================================
-       STEP 4
-       외부가 아닌 투명 영역을
-       각각 독립된 Region으로 분석
-    ======================================== */
-
-    const regionId =
-      new Int32Array(total);
-
+    const regionId = new Int32Array(total);
     regionId.fill(-1);
-
     const regions = [];
-
     let regionCount = 0;
 
-
     for (let y = 0; y < H; y++) {
-
       for (let x = 0; x < W; x++) {
-
-        const startIdx =
-          y * W + x;
-
+        const startIdx = y * W + x;
         if (outside[startIdx]) continue;
         if (boundary[startIdx]) continue;
         if (regionId[startIdx] !== -1) continue;
 
-
-        const id =
-          regionCount++;
-
+        const id = regionCount++;
         let size = 0;
-
         let minX = x;
         let maxX = x;
-
         let minY = y;
         let maxY = y;
-
         let sumX = 0;
         let sumY = 0;
 
-
-        const regionQueue =
-          new Int32Array(total);
-
+        const regionQueue = new Int32Array(total);
         let rs = 0;
         let re = 0;
 
-
         regionId[startIdx] = id;
-
-        regionQueue[re++] =
-          startIdx;
-
+        regionQueue[re++] = startIdx;
 
         while (rs < re) {
-
-          const idx =
-            regionQueue[rs++];
-
-          const px =
-            idx % W;
-
-          const py =
-            Math.floor(idx / W);
-
+          const idx = regionQueue[rs++];
+          const px = idx % W;
+          const py = Math.floor(idx / W);
 
           size++;
-
           sumX += px;
           sumY += py;
 
           if (px < minX) minX = px;
           if (px > maxX) maxX = px;
-
           if (py < minY) minY = py;
           if (py > maxY) maxY = py;
 
-
-          const neighbors = [
-            idx - 1,
-            idx + 1,
-            idx - W,
-            idx + W
-          ];
-
-
+          const neighbors = [idx - 1, idx + 1, idx - W, idx + W];
           for (let n = 0; n < 4; n++) {
+            const ni = neighbors[n];
+            if (ni < 0 || ni >= total) continue;
+            const nx = ni % W;
+            const ny = Math.floor(ni / W);
 
-            const ni =
-              neighbors[n];
-
-            if (
-              ni < 0 ||
-              ni >= total
-            ) continue;
-
-
-            const nx =
-              ni % W;
-
-            const ny =
-              Math.floor(ni / W);
-
-
-            /*
-             * 좌우 줄바꿈 방지
-             */
-
-            if (
-              Math.abs(nx - px) +
-              Math.abs(ny - py) !== 1
-            ) continue;
-
-
+            if (Math.abs(nx - px) + Math.abs(ny - py) !== 1) continue;
             if (outside[ni]) continue;
             if (boundary[ni]) continue;
-
-            if (
-              regionId[ni] !== -1
-            ) continue;
-
+            if (regionId[ni] !== -1) continue;
 
             regionId[ni] = id;
-
-            regionQueue[re++] =
-              ni;
-
+            regionQueue[re++] = ni;
           }
         }
 
-
         regions.push({
-
           id,
-
           size,
-
           minX,
           maxX,
-
           minY,
           maxY,
-
-          centerX:
-            sumX / size,
-
-          centerY:
-            sumY / size
-
+          centerX: sumX / size,
+          centerY: sumY / size
         });
       }
     }
 
-
-    /* ========================================
-       STEP 5
-       실제 몸체 영역 결정
-
-       중요:
-       "가장 큰 영역 = hole"이 아니다.
-
-       가장 큰 내부 영역을
-       반가사유상의 BODY로 사용한다.
-    ======================================== */
-
     let bodyRegion = null;
-
-
     for (const region of regions) {
-
-      if (
-        !bodyRegion ||
-        region.size > bodyRegion.size
-      ) {
-
+      if (!bodyRegion || region.size > bodyRegion.size) {
         bodyRegion = region;
-
       }
     }
 
-
     if (!bodyRegion) {
-
-      console.warn(
-        '[Splash] body region not found'
-      );
-
+      console.warn('[Splash] body region not found');
       return;
     }
 
-
-    /* ========================================
-       STEP 6
-       Negative Space 판별
-
-       팔 / 가슴 / 다리 사이의 구멍은
-       몸체 내부 중앙 부근에 위치한다.
-
-       몸체보다 훨씬 작은
-       독립 Region만 hole 후보가 된다.
-    ======================================== */
-
-    const holes =
-      new Set();
-
-
-    const bodyWidth =
-      bodyRegion.maxX -
-      bodyRegion.minX;
-
-    const bodyHeight =
-      bodyRegion.maxY -
-      bodyRegion.minY;
-
+    const holes = new Set();
+    const bodyWidth = bodyRegion.maxX - bodyRegion.minX;
+    const bodyHeight = bodyRegion.maxY - bodyRegion.minY;
 
     for (const region of regions) {
-
-      if (
-        region.id ===
-        bodyRegion.id
-      ) continue;
-
-
-      /*
-       * 너무 작은 노이즈는 무시
-       */
-
-      if (region.size < 20)
-        continue;
-
-
-      /*
-       * 몸체 크기의 35%보다 큰 영역은
-       * hole로 보지 않는다.
-       */
-
-      if (
-        region.size >
-        bodyRegion.size * 0.35
-      ) continue;
-
-
-      /*
-       * 실제 몸체 Bounding Box 내부에
-       * 존재하는 영역만 hole 가능
-       */
+      if (region.id === bodyRegion.id) continue;
+      if (region.size < 20) continue;
+      if (region.size > bodyRegion.size * 0.35) continue;
 
       const insideBodyBounds =
-
-        region.centerX >
-        bodyRegion.minX +
-
-        bodyWidth * 0.08
-
-        &&
-
-        region.centerX <
-        bodyRegion.maxX -
-
-        bodyWidth * 0.08
-
-        &&
-
-        region.centerY >
-        bodyRegion.minY +
-
-        bodyHeight * 0.08
-
-        &&
-
-        region.centerY <
-        bodyRegion.maxY -
-
-        bodyHeight * 0.08;
-
+        region.centerX > bodyRegion.minX + bodyWidth * 0.08 &&
+        region.centerX < bodyRegion.maxX - bodyWidth * 0.08 &&
+        region.centerY > bodyRegion.minY + bodyHeight * 0.08 &&
+        region.centerY < bodyRegion.maxY - bodyHeight * 0.08;
 
       if (insideBodyBounds) {
-
-        holes.add(
-          region.id
-        );
-
+        holes.add(region.id);
       }
     }
 
-
-    /* ========================================
-       STEP 7
-       최종 마스크 생성
-    ======================================== */
-
-    const maskCanvas =
-      document.createElement('canvas');
-
+    const maskCanvas = document.createElement('canvas');
     maskCanvas.width = W;
     maskCanvas.height = H;
 
-
-    const maskCtx =
-      maskCanvas.getContext('2d');
-
-
-    const maskImage =
-      maskCtx.createImageData(
-        W,
-        H
-      );
-
-
-    const mask =
-      maskImage.data;
-
+    const maskCtx = maskCanvas.getContext('2d');
+    const maskImage = maskCtx.createImageData(W, H);
+    const mask = maskImage.data;
 
     for (let i = 0; i < total; i++) {
-
-      const p =
-        i * 4;
-
-
+      const p = i * 4;
       let fill = false;
 
-
-      /*
-       * 원본 외곽선
-       */
-
-      if (boundary[i]) {
-
-        fill = true;
-
-      }
-
-
-      /*
-       * BODY
-       */
-
-      if (
-        regionId[i] ===
-        bodyRegion.id
-      ) {
-
-        fill = true;
-
-      }
-
-
-      /*
-       * Negative Space는
-       * 반드시 다시 제거
-       */
-
-      if (
-        holes.has(
-          regionId[i]
-        )
-      ) {
-
-        fill = false;
-
-      }
-
-
-      /*
-       * 외부 배경은
-       * 최종적으로 무조건 투명
-       */
-
-      if (outside[i]) {
-
-        fill = false;
-
-      }
-
+      if (boundary[i]) fill = true;
+      if (regionId[i] === bodyRegion.id) fill = true;
+      if (holes.has(regionId[i])) fill = false;
+      if (outside[i]) fill = false;
 
       if (fill) {
-
         mask[p] = 255;
         mask[p + 1] = 255;
         mask[p + 2] = 255;
         mask[p + 3] = 255;
-
       } else {
-
         mask[p] = 0;
         mask[p + 1] = 0;
         mask[p + 2] = 0;
         mask[p + 3] = 0;
-
       }
     }
 
-
-    maskCtx.putImageData(
-      maskImage,
-      0,
-      0
-    );
-
-
-    const maskUrl =
-      maskCanvas.toDataURL(
-        'image/png'
-      );
-
-
-    callback(
-      maskUrl,
-      W,
-      H
-    );
+    maskCtx.putImageData(maskImage, 0, 0);
+    const maskUrl = maskCanvas.toDataURL('image/png');
+    callback(maskUrl, W, H);
   }
 
+  // ============================================================
+  // FRAMES_4 FRAME SEQUENCE ANIMATION PLAYBACK
+  // ============================================================
+  const TOTAL_FRAMES = 60;
+  const preloadedImages = [];
+  let loadedCount = 0;
+  let animationStarted = false;
 
-  /* ========================================
-     LOADING ANIMATION
-  ======================================== */
+  for (let i = 1; i <= TOTAL_FRAMES; i++) {
+    const padIndex = String(i).padStart(4, '0');
+    const img = new Image();
+    img.src = `frames/frames_4/frame_${padIndex}.jpg`;
+    img.onload = () => {
+      loadedCount++;
+      if (!animationStarted && (loadedCount >= 3 || loadedCount === TOTAL_FRAMES)) {
+        startFramePlayback();
+      }
+    };
+    img.onerror = () => {
+      loadedCount++;
+      if (!animationStarted && (loadedCount >= 3 || loadedCount === TOTAL_FRAMES)) {
+        startFramePlayback();
+      }
+    };
+    preloadedImages.push(img);
+  }
 
-  function startLoadingAnimation(
-    maskUrl,
-    SVG_W,
-    SVG_H
-  ) {
-    const splashWaveHighlight = document.getElementById('splashWaveHighlight');
-    const splashGoldFlash = document.getElementById('splashGoldFlash');
-    const splashShockwave = document.getElementById('splashShockwave');
-
-    if (splashWaveSvg) {
-      splashWaveSvg.setAttribute(
-        'viewBox',
-        `0 0 ${SVG_W} ${SVG_H}`
-      );
-
-      splashWaveSvg.setAttribute(
-        'preserveAspectRatio',
-        'xMidYMid meet'
-      );
+  // Safe fallback if images load from memory/cache instantly
+  setTimeout(() => {
+    if (!animationStarted) {
+      startFramePlayback();
     }
+  }, 60);
 
-    if (splashLiquidLayer) {
-      splashLiquidLayer.style.maskImage =
-        `url("${maskUrl}")`;
+  function startFramePlayback() {
+    if (animationStarted) return;
+    animationStarted = true;
 
-      splashLiquidLayer.style.webkitMaskImage =
-        `url("${maskUrl}")`;
-
-      splashLiquidLayer.style.maskSize =
-        'contain';
-
-      splashLiquidLayer.style.webkitMaskSize =
-        'contain';
-
-      splashLiquidLayer.style.maskPosition =
-        'center';
-
-      splashLiquidLayer.style.webkitMaskPosition =
-        'center';
-
-      splashLiquidLayer.style.maskRepeat =
-        'no-repeat';
-
-      splashLiquidLayer.style.webkitMaskRepeat =
-        'no-repeat';
-
-      splashLiquidLayer.style.opacity =
-        '1';
-    }
-
-    let progress = 0;
-    let phase = 0;
-    let animationFrameId = null;
+    let currentFrame = 0;
+    let lastTimestamp = performance.now();
+    const targetFps = 28; // ~2.1s duration for 60 frames
+    const frameInterval = 1000 / targetFps;
     let completed = false;
 
-    const frequency = 0.04;
+    if (splashFrameImg && preloadedImages[0]) {
+      splashFrameImg.src = preloadedImages[0].src;
+    }
 
-    function renderFrame() {
+    function renderSequence(timestamp) {
       if (completed) return;
 
-      /*
-       * 로딩 속도
-       */
-      progress += 0.75;
+      const elapsed = timestamp - lastTimestamp;
 
-      if (progress > 100)
-        progress = 100;
+      if (elapsed >= frameInterval) {
+        lastTimestamp = timestamp - (elapsed % frameInterval);
 
-      const currentPercent =
-        Math.floor(progress);
+        if (currentFrame < TOTAL_FRAMES) {
+          if (splashFrameImg && preloadedImages[currentFrame]) {
+            splashFrameImg.src = preloadedImages[currentFrame].src;
+          }
 
-      if (splashPercent) {
-        splashPercent.textContent =
-          `${currentPercent}%`;
-      }
+          currentFrame++;
 
-      /*
-       * 아래 -> 위
-       */
-      const fillY =
-        SVG_H -
-        (progress / 100) *
-        SVG_H;
+          const percent = Math.min(100, Math.floor((currentFrame / TOTAL_FRAMES) * 100));
+          if (splashPercent) {
+            splashPercent.textContent = `${percent}%`;
+          }
 
-      phase += 0.065;
-
-      /*
-       * 0~90% 절제된 정교한 Dark Gold Outline
-       * 90%~100% 은은한 Golden Aura 형성
-       */
-      if (statueWrap) {
-        if (progress < 90) {
-          const shadowBlur = 6 + (progress / 90) * 8;
-          const shadowAlpha = 0.25 + (progress / 90) * 0.25;
-          statueWrap.style.filter = `drop-shadow(0 0 ${shadowBlur.toFixed(1)}px rgba(201, 161, 90, ${shadowAlpha.toFixed(2)}))`;
+          if (statueWrap) {
+            const glowFactor = currentFrame / TOTAL_FRAMES;
+            const shadowBlur = 6 + glowFactor * 16;
+            const shadowAlpha = 0.3 + glowFactor * 0.5;
+            statueWrap.style.filter = `drop-shadow(0 0 ${shadowBlur.toFixed(1)}px rgba(241, 213, 154, ${shadowAlpha.toFixed(2)}))`;
+          }
         } else {
-          const auraFactor = (progress - 90) / 10;
-          const shadowBlur = 14 + auraFactor * 14;
-          const shadowAlpha = 0.5 + auraFactor * 0.4;
-          statueWrap.style.filter = `drop-shadow(0 0 ${shadowBlur.toFixed(1)}px rgba(241, 213, 154, ${shadowAlpha.toFixed(2)})) brightness(${1.0 + auraFactor * 0.12})`;
-        }
-      }
+          completed = true;
+          if (splashPercent) {
+            splashPercent.textContent = '100%';
+          }
 
-      /*
-       * 마지막 5%에서 파도 자연스럽게 사라짐
-       */
-      let amplitude = 3.5;
-
-      if (progress > 95) {
-        amplitude =
-          3.5 *
-          ((100 - progress) / 5);
-      }
-
-      let pathD;
-      let highlightD = '';
-
-      if (progress >= 100) {
-        /*
-         * 100%에서는 전체 사각형으로 채운다.
-         * 실제 표시 영역은 CSS mask가 BODY만 남긴다.
-         */
-        pathD =
-          `M 0 0 ` +
-          `L ${SVG_W} 0 ` +
-          `L ${SVG_W} ${SVG_H} ` +
-          `L 0 ${SVG_H} Z`;
-      } else {
-        pathD =
-          `M 0 ${SVG_H} ` +
-          `L 0 ${fillY}`;
-
-        highlightD = `M 0 ${fillY.toFixed(2)}`;
-
-        const step =
-          Math.max(
-            4,
-            Math.floor(
-              SVG_W / 70
-            )
-          );
-
-        for (
-          let x = 0;
-          x <= SVG_W;
-          x += step
-        ) {
-          const waveY =
-            fillY +
-            Math.sin(
-              x * frequency +
-              phase
-            ) *
-            amplitude;
-
-          pathD +=
-            ` L ${x} ${waveY.toFixed(2)}`;
-          highlightD +=
-            ` L ${x} ${waveY.toFixed(2)}`;
-        }
-
-        pathD +=
-          ` L ${SVG_W} ${SVG_H} Z`;
-      }
-
-      splashWavePath.setAttribute(
-        'd',
-        pathD
-      );
-
-      if (splashWaveHighlight) {
-        splashWaveHighlight.setAttribute('d', progress >= 99.5 ? '' : highlightD);
-      }
-
-      /*
-       * 작은 금빛 입자
-       */
-      if (
-        progress > 8 &&
-        progress < 94 &&
-        Math.random() < 0.28
-      ) {
-        spawnSplashParticle(
-          fillY
-        );
-      }
-
-      if (progress >= 100) {
-        completed = true;
-        onSplashComplete();
-        return;
-      }
-
-      animationFrameId =
-        requestAnimationFrame(
-          renderFrame
-        );
-    }
-
-    function spawnSplashParticle(
-      fillY
-    ) {
-      if (!splashParticles)
-        return;
-
-      const particle =
-        document.createElement(
-          'div'
-        );
-
-      particle.className =
-        'splash-particle-dot';
-
-      const randomX =
-        Math.random() * 60 + 20;
-
-      const randomY =
-        (fillY / SVG_H) *
-        100 +
-        (Math.random() * 5 - 2.5);
-
-      particle.style.left =
-        `${randomX}%`;
-
-      particle.style.top =
-        `${randomY}%`;
-
-      splashParticles.appendChild(
-        particle
-      );
-
-      setTimeout(() => {
-        particle.remove();
-      }, 1100);
-    }
-
-    function trigger360GoldBurst() {
-      // 1. Activate Golden Halo behind statue
-      const splashHalo = document.getElementById('splashHalo');
-      if (splashHalo) {
-        splashHalo.classList.add('is-active');
-      }
-      // 2. Shockwave ring expansion
-      if (splashShockwave) {
-        splashShockwave.classList.add('is-active');
-      }
-      // 3. Gold Flash pulse
-      if (splashGoldFlash) {
-        splashGoldFlash.classList.add('is-active');
-      }
-      // 4. 360° Golden Light Streaks & Fine Dust Particles (Matching Reference)
-      if (splashParticles) {
-        const streakCount = 28;
-        for (let i = 0; i < streakCount; i++) {
-          const streak = document.createElement('div');
-          streak.className = 'splash-light-streak';
-          const angle = (i / streakCount) * 360 + (Math.random() * 8 - 4);
-          const len = 50 + Math.random() * 70;
-          const dist = 80 + Math.random() * 90;
-          const duration = 0.45 + Math.random() * 0.25;
-
-          streak.style.setProperty('--angle', `${angle.toFixed(1)}deg`);
-          streak.style.setProperty('--streak-len', `${len.toFixed(1)}px`);
-          streak.style.setProperty('--dist', `${dist.toFixed(1)}px`);
-          streak.style.setProperty('--duration', `${duration.toFixed(2)}s`);
-
-          splashParticles.appendChild(streak);
-        }
-
-        const particleCount = 36;
-        for (let i = 0; i < particleCount; i++) {
-          const particle = document.createElement('div');
-          particle.className = 'splash-burst-particle';
-
-          const angle = (i / particleCount) * Math.PI * 2 + (Math.random() * 0.3 - 0.15);
-          const distance = 65 + Math.random() * 105;
-          const tx = Math.cos(angle) * distance;
-          const ty = Math.sin(angle) * distance;
-          const size = Math.random() * 2.4 + 1.6;
-          const duration = 0.5 + Math.random() * 0.35;
-
-          particle.style.width = `${size}px`;
-          particle.style.height = `${size}px`;
-          particle.style.setProperty('--tx', `${tx.toFixed(1)}px`);
-          particle.style.setProperty('--ty', `${ty.toFixed(1)}px`);
-          particle.style.setProperty('--duration', `${duration.toFixed(2)}s`);
-
-          splashParticles.appendChild(particle);
-        }
-      }
-    }
-
-    function onSplashComplete() {
-      if (splashPercent) {
-        splashPercent.textContent =
-          '100%';
-      }
-
-      // 0.2초 Solid Gold 상태 유지 후 360° 금빛 폭발 연출
-      setTimeout(() => {
-        if (statueWrap) {
-          statueWrap.style.transition =
-            'filter 0.4s ease';
-
-          statueWrap.style.filter =
-            'drop-shadow(0 0 32px rgba(241, 213, 154, 0.98)) brightness(1.2)';
-        }
-
-        trigger360GoldBurst();
-
-        // 0.4초 동안 잔여 Gold Dust 유지 후 자연스러운 Fade Out
-        setTimeout(() => {
-          splashScreen.style.transition =
-            'opacity 0.85s cubic-bezier(0.19, 1, 0.22, 1)';
-
-          splashScreen.style.opacity =
-            '0';
-
-          splashScreen.style.pointerEvents =
-            'none';
-
+          // Hold on last frame briefly, then smoothly fade out splash screen
           setTimeout(() => {
-            if (animationFrameId) {
-              cancelAnimationFrame(
-                animationFrameId
-              );
-            }
+            splashScreen.style.transition = 'opacity 0.85s cubic-bezier(0.19, 1, 0.22, 1)';
+            splashScreen.style.opacity = '0';
+            splashScreen.style.pointerEvents = 'none';
 
-            splashScreen.remove();
-          }, 850);
-        }, 400);
-      }, 200);
+            setTimeout(() => {
+              splashScreen.remove();
+            }, 850);
+          }, 350);
+          return;
+        }
+      }
+
+      requestAnimationFrame(renderSequence);
     }
 
-    animationFrameId =
-      requestAnimationFrame(
-        renderFrame
-      );
-  }
-
-
-  /* ========================================
-     START
-  ======================================== */
-
-  function start() {
-
-    createSolidMask(
-      imgSource,
-      startLoadingAnimation
-    );
-
-  }
-
-
-  if (
-    imgSource.complete &&
-    imgSource.naturalWidth > 0
-  ) {
-
-    start();
-
-  } else {
-
-    imgSource.addEventListener(
-      'load',
-      start,
-      {
-        once: true
-      }
-    );
-
-
-    imgSource.addEventListener(
-      'error',
-      () => {
-
-        console.warn(
-          '[Splash] splash.png load failed'
-        );
-
-
-        /*
-         * 이미지 오류 때문에
-         * 사이트 자체가 막히지 않도록 처리
-         */
-
-        splashScreen.style.opacity =
-          '0';
-
-
-        setTimeout(() => {
-
-          splashScreen.remove();
-
-        }, 500);
-
-      },
-      {
-        once: true
-      }
-    );
+    requestAnimationFrame(renderSequence);
   }
 }

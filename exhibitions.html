@@ -25,12 +25,12 @@
     </a>
 
     <nav class="main-nav">
-      <a href="exhibitions.html" class="is-active">Exhibitions</a>
-      <a href="#">Visit &amp; Book</a>
-      <a href="boutique.html">Boutique</a>
-      <a href="#">Education</a>
-      <a href="#">Research</a>
-      <a href="#">About</a>
+      <a href="exhibitions.html" class="is-active" data-nav="exhibitions">Exhibitions</a>
+      <a href="visit.html" data-nav="visit">Visit &amp; Book</a>
+      <a href="#" data-nav="members">Members</a>
+      <a href="#" data-nav="education">Education</a>
+      <a href="#" data-nav="research">Research</a>
+      <a href="#" data-nav="about">About</a>
     </nav>
 
     <div class="header-utils">
@@ -43,6 +43,109 @@
       <button type="button" aria-label="메뉴">
         <svg width="18" height="12" viewBox="0 0 18 12" fill="none"><path d="M0 1h18M0 6h18M0 11h18" stroke="currentColor" stroke-width="1.2"/></svg>
       </button>
+    </div>
+  </div>
+
+  <!-- Mega Dropdown Panel -->
+  <div class="header-dropdown" id="headerDropdown" aria-hidden="true">
+    <div class="container header-dropdown__inner">
+
+      <!-- 01 Exhibitions Pane -->
+      <div class="dropdown-pane" data-pane="exhibitions">
+        <div class="dropdown-pane__info">
+          <span class="dropdown-pane__category">EXHIBITIONS</span>
+          <h3 class="dropdown-pane__title">Exhibitions &amp; Displays</h3>
+          <p class="dropdown-pane__desc">Explore 5,000 years of Korean heritage and world-class museum collections.</p>
+        </div>
+        <ul class="dropdown-pane__list">
+          <li><a href="exhibitions.html">Current Exhibitions</a></li>
+          <li><a href="exhibitions.html#upcoming">Upcoming Exhibitions</a></li>
+          <li><a href="exhibitions.html#special">Special Exhibitions</a></li>
+          <li><a href="exhibitions.html#past">Past Exhibitions</a></li>
+          <li><a href="artifact.html">Exhibition Highlights</a></li>
+        </ul>
+      </div>
+
+      <!-- 02 Visit & Book Pane -->
+      <div class="dropdown-pane" data-pane="visit">
+        <div class="dropdown-pane__info">
+          <span class="dropdown-pane__category">VISIT &amp; BOOK</span>
+          <h3 class="dropdown-pane__title">Plan Your Museum Visit</h3>
+          <p class="dropdown-pane__desc">Opening hours, ticket reservations, directions, and visitor amenities.</p>
+        </div>
+        <ul class="dropdown-pane__list">
+          <li><a href="visit.html">Visitor Information</a></li>
+          <li><a href="visit.html#hours">Opening Hours</a></li>
+          <li><a href="reservation.html">Tickets &amp; Reservations</a></li>
+          <li><a href="visit.html#directions">Directions</a></li>
+          <li><a href="visit.html#floor">Floor Guide</a></li>
+          <li><a href="visit.html#accessibility">Accessibility</a></li>
+        </ul>
+      </div>
+
+      <!-- 03 Members Pane -->
+      <div class="dropdown-pane" data-pane="members">
+        <div class="dropdown-pane__info">
+          <span class="dropdown-pane__category">MEMBERS</span>
+          <h3 class="dropdown-pane__title">Membership Community</h3>
+          <p class="dropdown-pane__desc">Exclusive member benefits, priority ticketing, and private exhibition viewings.</p>
+        </div>
+        <ul class="dropdown-pane__list">
+          <li><a href="#">Membership</a></li>
+          <li><a href="#">Member Benefits</a></li>
+          <li><a href="#">Join Membership</a></li>
+          <li><a href="#">Member Programs</a></li>
+        </ul>
+      </div>
+
+      <!-- 04 Education Pane -->
+      <div class="dropdown-pane" data-pane="education">
+        <div class="dropdown-pane__info">
+          <span class="dropdown-pane__category">EDUCATION</span>
+          <h3 class="dropdown-pane__title">Learning &amp; Discovery</h3>
+          <p class="dropdown-pane__desc">Enriching cultural education for children, adults, schools, and families.</p>
+        </div>
+        <ul class="dropdown-pane__list">
+          <li><a href="#">Educational Programs</a></li>
+          <li><a href="#">Children &amp; Families</a></li>
+          <li><a href="#">School Programs</a></li>
+          <li><a href="#">Adult Programs</a></li>
+          <li><a href="#">Online Learning</a></li>
+        </ul>
+      </div>
+
+      <!-- 05 Research Pane -->
+      <div class="dropdown-pane" data-pane="research">
+        <div class="dropdown-pane__info">
+          <span class="dropdown-pane__category">RESEARCH</span>
+          <h3 class="dropdown-pane__title">Collection &amp; Research</h3>
+          <p class="dropdown-pane__desc">Academic publications, artifact conservation, and digital museum archives.</p>
+        </div>
+        <ul class="dropdown-pane__list">
+          <li><a href="heritage.html">Collection Research</a></li>
+          <li><a href="#">Conservation</a></li>
+          <li><a href="#">Publications</a></li>
+          <li><a href="#">Museum Archives</a></li>
+          <li><a href="#">Academic Resources</a></li>
+        </ul>
+      </div>
+
+      <!-- 06 About Pane -->
+      <div class="dropdown-pane" data-pane="about">
+        <div class="dropdown-pane__info">
+          <span class="dropdown-pane__category">ABOUT</span>
+          <h3 class="dropdown-pane__title">National Museum of Korea</h3>
+          <p class="dropdown-pane__desc">Preserving cultural heritage and fostering global artistic dialogue.</p>
+        </div>
+        <ul class="dropdown-pane__list">
+          <li><a href="#">About NMK</a></li>
+          <li><a href="#">Museum History</a></li>
+          <li><a href="#">Architecture</a></li>
+          <li><a href="#">News &amp; Notices</a></li>
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      </div>
+
     </div>
   </div>
 </header>
