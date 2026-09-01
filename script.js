@@ -2019,9 +2019,11 @@ function initSplashScreen() {
     SVG_W,
     SVG_H
   ) {
+    const splashWaveHighlight = document.getElementById('splashWaveHighlight');
+    const splashGoldFlash = document.getElementById('splashGoldFlash');
+    const splashShockwave = document.getElementById('splashShockwave');
 
     if (splashWaveSvg) {
-
       splashWaveSvg.setAttribute(
         'viewBox',
         `0 0 ${SVG_W} ${SVG_H}`
@@ -2033,15 +2035,12 @@ function initSplashScreen() {
       );
     }
 
-
     if (splashLiquidLayer) {
-
       splashLiquidLayer.style.maskImage =
         `url("${maskUrl}")`;
 
       splashLiquidLayer.style.webkitMaskImage =
         `url("${maskUrl}")`;
-
 
       splashLiquidLayer.style.maskSize =
         'contain';
@@ -2049,13 +2048,11 @@ function initSplashScreen() {
       splashLiquidLayer.style.webkitMaskSize =
         'contain';
 
-
       splashLiquidLayer.style.maskPosition =
         'center';
 
       splashLiquidLayer.style.webkitMaskPosition =
         'center';
-
 
       splashLiquidLayer.style.maskRepeat =
         'no-repeat';
@@ -2063,106 +2060,93 @@ function initSplashScreen() {
       splashLiquidLayer.style.webkitMaskRepeat =
         'no-repeat';
 
-
       splashLiquidLayer.style.opacity =
         '1';
     }
 
-
     let progress = 0;
     let phase = 0;
-
     let animationFrameId = null;
-
     let completed = false;
-
 
     const frequency = 0.04;
 
-
     function renderFrame() {
-
       if (completed) return;
-
 
       /*
        * 로딩 속도
        */
-
       progress += 0.75;
 
       if (progress > 100)
         progress = 100;
 
-
       const currentPercent =
         Math.floor(progress);
 
-
       if (splashPercent) {
-
         splashPercent.textContent =
           `${currentPercent}%`;
-
       }
-
 
       /*
        * 아래 -> 위
        */
-
       const fillY =
         SVG_H -
         (progress / 100) *
         SVG_H;
 
-
       phase += 0.065;
 
-
       /*
-       * 마지막 5%에서
-       * 파도 자연스럽게 사라짐
+       * 0~90% 절제된 정교한 Dark Gold Outline
+       * 90%~100% 은은한 Golden Aura 형성
        */
-
-      let amplitude = 3.5;
-
-
-      if (progress > 95) {
-
-        amplitude =
-          3.5 *
-
-          ((100 - progress) / 5);
-
+      if (statueWrap) {
+        if (progress < 90) {
+          const shadowBlur = 6 + (progress / 90) * 8;
+          const shadowAlpha = 0.25 + (progress / 90) * 0.25;
+          statueWrap.style.filter = `drop-shadow(0 0 ${shadowBlur.toFixed(1)}px rgba(201, 161, 90, ${shadowAlpha.toFixed(2)}))`;
+        } else {
+          const auraFactor = (progress - 90) / 10;
+          const shadowBlur = 14 + auraFactor * 14;
+          const shadowAlpha = 0.5 + auraFactor * 0.4;
+          statueWrap.style.filter = `drop-shadow(0 0 ${shadowBlur.toFixed(1)}px rgba(241, 213, 154, ${shadowAlpha.toFixed(2)})) brightness(${1.0 + auraFactor * 0.12})`;
+        }
       }
 
+      /*
+       * 마지막 5%에서 파도 자연스럽게 사라짐
+       */
+      let amplitude = 3.5;
+
+      if (progress > 95) {
+        amplitude =
+          3.5 *
+          ((100 - progress) / 5);
+      }
 
       let pathD;
-
+      let highlightD = '';
 
       if (progress >= 100) {
-
         /*
-         * 100%에서는
-         * 전체 사각형으로 채운다.
-
-         * 실제 표시 영역은
-         * CSS mask가 BODY만 남긴다.
+         * 100%에서는 전체 사각형으로 채운다.
+         * 실제 표시 영역은 CSS mask가 BODY만 남긴다.
          */
-
         pathD =
           `M 0 0 ` +
           `L ${SVG_W} 0 ` +
           `L ${SVG_W} ${SVG_H} ` +
           `L 0 ${SVG_H} Z`;
-
       } else {
-
         pathD =
           `M 0 ${SVG_H} ` +
           `L 0 ${fillY}`;
 
+        highlightD = `M 0 ${fillY.toFixed(2)}`;
 
         const step =
           Math.max(
@@ -2172,68 +2156,56 @@ function initSplashScreen() {
             )
           );
 
-
         for (
           let x = 0;
           x <= SVG_W;
           x += step
         ) {
-
           const waveY =
-
             fillY +
-
             Math.sin(
               x * frequency +
               phase
             ) *
-
             amplitude;
-
 
           pathD +=
             ` L ${x} ${waveY.toFixed(2)}`;
-
+          highlightD +=
+            ` L ${x} ${waveY.toFixed(2)}`;
         }
-
 
         pathD +=
           ` L ${SVG_W} ${SVG_H} Z`;
       }
-
 
       splashWavePath.setAttribute(
         'd',
         pathD
       );
 
+      if (splashWaveHighlight) {
+        splashWaveHighlight.setAttribute('d', progress >= 99.5 ? '' : highlightD);
+      }
 
       /*
        * 작은 금빛 입자
        */
-
       if (
         progress > 8 &&
         progress < 94 &&
         Math.random() < 0.28
       ) {
-
         spawnSplashParticle(
           fillY
         );
-
       }
-
 
       if (progress >= 100) {
-
         completed = true;
-
         onSplashComplete();
-
         return;
       }
-
 
       animationFrameId =
         requestAnimationFrame(
@@ -2241,36 +2213,27 @@ function initSplashScreen() {
         );
     }
 
-
     function spawnSplashParticle(
       fillY
     ) {
-
       if (!splashParticles)
         return;
-
 
       const particle =
         document.createElement(
           'div'
         );
 
-
       particle.className =
         'splash-particle-dot';
-
 
       const randomX =
         Math.random() * 60 + 20;
 
-
       const randomY =
-
         (fillY / SVG_H) *
         100 +
-
         (Math.random() * 5 - 2.5);
-
 
       particle.style.left =
         `${randomX}%`;
@@ -2278,75 +2241,112 @@ function initSplashScreen() {
       particle.style.top =
         `${randomY}%`;
 
-
       splashParticles.appendChild(
         particle
       );
 
-
       setTimeout(() => {
-
         particle.remove();
-
       }, 1100);
     }
 
-
-    function onSplashComplete() {
-
-      /*
-       * 100% 상태를 잠깐 보여준다.
-       */
-
-      if (splashPercent) {
-
-        splashPercent.textContent =
-          '100%';
-
+    function trigger360GoldBurst() {
+      // 1. Activate Golden Halo behind statue
+      const splashHalo = document.getElementById('splashHalo');
+      if (splashHalo) {
+        splashHalo.classList.add('is-active');
       }
-
-
-      if (statueWrap) {
-
-        statueWrap.style.transition =
-          'filter 0.55s ease';
-
-        statueWrap.style.filter =
-          'drop-shadow(0 0 24px rgba(241, 213, 154, 0.9)) brightness(1.12)';
-
+      // 2. Shockwave ring expansion
+      if (splashShockwave) {
+        splashShockwave.classList.add('is-active');
       }
+      // 3. Gold Flash pulse
+      if (splashGoldFlash) {
+        splashGoldFlash.classList.add('is-active');
+      }
+      // 4. 360° Golden Light Streaks & Fine Dust Particles (Matching Reference)
+      if (splashParticles) {
+        const streakCount = 28;
+        for (let i = 0; i < streakCount; i++) {
+          const streak = document.createElement('div');
+          streak.className = 'splash-light-streak';
+          const angle = (i / streakCount) * 360 + (Math.random() * 8 - 4);
+          const len = 50 + Math.random() * 70;
+          const dist = 80 + Math.random() * 90;
+          const duration = 0.45 + Math.random() * 0.25;
 
+          streak.style.setProperty('--angle', `${angle.toFixed(1)}deg`);
+          streak.style.setProperty('--streak-len', `${len.toFixed(1)}px`);
+          streak.style.setProperty('--dist', `${dist.toFixed(1)}px`);
+          streak.style.setProperty('--duration', `${duration.toFixed(2)}s`);
 
-      setTimeout(() => {
+          splashParticles.appendChild(streak);
+        }
 
-        splashScreen.style.transition =
-          'opacity 0.8s cubic-bezier(0.19, 1, 0.22, 1)';
+        const particleCount = 36;
+        for (let i = 0; i < particleCount; i++) {
+          const particle = document.createElement('div');
+          particle.className = 'splash-burst-particle';
 
-        splashScreen.style.opacity =
-          '0';
+          const angle = (i / particleCount) * Math.PI * 2 + (Math.random() * 0.3 - 0.15);
+          const distance = 65 + Math.random() * 105;
+          const tx = Math.cos(angle) * distance;
+          const ty = Math.sin(angle) * distance;
+          const size = Math.random() * 2.4 + 1.6;
+          const duration = 0.5 + Math.random() * 0.35;
 
-        splashScreen.style.pointerEvents =
-          'none';
+          particle.style.width = `${size}px`;
+          particle.style.height = `${size}px`;
+          particle.style.setProperty('--tx', `${tx.toFixed(1)}px`);
+          particle.style.setProperty('--ty', `${ty.toFixed(1)}px`);
+          particle.style.setProperty('--duration', `${duration.toFixed(2)}s`);
 
-
-        setTimeout(() => {
-
-          if (animationFrameId) {
-
-            cancelAnimationFrame(
-              animationFrameId
-            );
-
-          }
-
-
-          splashScreen.remove();
-
-        }, 850);
-
-      }, 500);
+          splashParticles.appendChild(particle);
+        }
+      }
     }
 
+    function onSplashComplete() {
+      if (splashPercent) {
+        splashPercent.textContent =
+          '100%';
+      }
+
+      // 0.2초 Solid Gold 상태 유지 후 360° 금빛 폭발 연출
+      setTimeout(() => {
+        if (statueWrap) {
+          statueWrap.style.transition =
+            'filter 0.4s ease';
+
+          statueWrap.style.filter =
+            'drop-shadow(0 0 32px rgba(241, 213, 154, 0.98)) brightness(1.2)';
+        }
+
+        trigger360GoldBurst();
+
+        // 0.4초 동안 잔여 Gold Dust 유지 후 자연스러운 Fade Out
+        setTimeout(() => {
+          splashScreen.style.transition =
+            'opacity 0.85s cubic-bezier(0.19, 1, 0.22, 1)';
+
+          splashScreen.style.opacity =
+            '0';
+
+          splashScreen.style.pointerEvents =
+            'none';
+
+          setTimeout(() => {
+            if (animationFrameId) {
+              cancelAnimationFrame(
+                animationFrameId
+              );
+            }
+
+            splashScreen.remove();
+          }, 850);
+        }, 400);
+      }, 200);
+    }
 
     animationFrameId =
       requestAnimationFrame(

@@ -3487,33 +3487,105 @@ body {
   z-index: 105;
   color: #ebd1a6; /* Muted Gold */
   opacity: 0.65;
-  transition: color 0.4s cubic-bezier(0.19, 1, 0.22, 1), 
-              opacity 0.4s cubic-bezier(0.19, 1, 0.22, 1), 
-              transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  transition: color 0.35s cubic-bezier(0.19, 1, 0.22, 1), 
+              opacity 0.35s cubic-bezier(0.19, 1, 0.22, 1), 
+              transform 0.35s cubic-bezier(0.19, 1, 0.22, 1),
+              filter 0.35s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 60px;
-  height: 60px;
+  width: 69px;  /* 기존 대비 약 15% 확대 (60px -> 69px) */
+  height: 69px; /* 기존 대비 약 15% 확대 (60px -> 69px) */
 }
 
 .hero-nav-btn svg {
-  width: 52px;
-  height: 52px;
+  width: 60px;  /* 기존 대비 약 15% 확대 (52px -> 60px) */
+  height: 60px; /* 기존 대비 약 15% 확대 (52px -> 60px) */
 }
 
 .hero-nav-btn--prev {
   left: clamp(35px, 4vw, 50px);
+  animation: heroNavPulsePrev 1.6s infinite ease-in-out;
 }
 
 .hero-nav-btn--next {
   right: clamp(35px, 4vw, 50px);
+  animation: heroNavPulseNext 1.6s infinite ease-in-out;
 }
 
-.hero-nav-btn:hover {
-  color: #ebd1a6; /* Warm Gold */
+/* 바깥쪽 2회 펄스 모션 & 금빛 glow 연출 (1.6s 주기) */
+@keyframes heroNavPulsePrev {
+  0%, 100% {
+    transform: translateY(-50%) translateX(0);
+    opacity: 0.65;
+    filter: drop-shadow(0 0 0px rgba(241, 213, 154, 0)) brightness(1);
+  }
+  25% {
+    transform: translateY(-50%) translateX(-16px);
+    opacity: 0.92;
+    filter: drop-shadow(0 0 10px rgba(241, 213, 154, 0.5)) brightness(1.15);
+  }
+  45% {
+    transform: translateY(-50%) translateX(-5px);
+    opacity: 0.75;
+    filter: drop-shadow(0 0 4px rgba(241, 213, 154, 0.25)) brightness(1.05);
+  }
+  65% {
+    transform: translateY(-50%) translateX(-18px);
+    opacity: 1;
+    filter: drop-shadow(0 0 14px rgba(241, 213, 154, 0.65)) brightness(1.2);
+  }
+}
+
+@keyframes heroNavPulseNext {
+  0%, 100% {
+    transform: translateY(-50%) translateX(0);
+    opacity: 0.65;
+    filter: drop-shadow(0 0 0px rgba(241, 213, 154, 0)) brightness(1);
+  }
+  25% {
+    transform: translateY(-50%) translateX(16px);
+    opacity: 0.92;
+    filter: drop-shadow(0 0 10px rgba(241, 213, 154, 0.5)) brightness(1.15);
+  }
+  45% {
+    transform: translateY(-50%) translateX(5px);
+    opacity: 0.75;
+    filter: drop-shadow(0 0 4px rgba(241, 213, 154, 0.25)) brightness(1.05);
+  }
+  65% {
+    transform: translateY(-50%) translateX(18px);
+    opacity: 1;
+    filter: drop-shadow(0 0 14px rgba(241, 213, 154, 0.65)) brightness(1.2);
+  }
+}
+
+/* Hover 시: 애니메이션 일시 정지, 20px 이동, 1.08배 확대 및 강한 금빛 glow */
+.hero-nav-btn--prev:hover {
+  animation-play-state: paused;
+  transform: translateY(-50%) translateX(-20px) scale(1.08);
   opacity: 1;
-  transform: translateY(-50%) scale(1.08);
+  color: #F1D59A;
+  filter: drop-shadow(0 0 16px rgba(241, 213, 154, 0.75)) brightness(1.25);
+}
+
+.hero-nav-btn--next:hover {
+  animation-play-state: paused;
+  transform: translateY(-50%) translateX(20px) scale(1.08);
+  opacity: 1;
+  color: #F1D59A;
+  filter: drop-shadow(0 0 16px rgba(241, 213, 154, 0.75)) brightness(1.25);
+}
+
+/* Click (:active) 시: scale(0.88) 피드백 */
+.hero-nav-btn--prev:active {
+  transform: translateY(-50%) translateX(-20px) scale(0.88);
+  transition-duration: 0.1s;
+}
+
+.hero-nav-btn--next:active {
+  transform: translateY(-50%) translateX(20px) scale(0.88);
+  transition-duration: 0.1s;
 }
 
 /* 2~4개의 작은 Gold Sparkle 반짝임 데코 */
@@ -3795,31 +3867,124 @@ body {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .splash-particle-dot {
   position: absolute;
-  width: 3px;
-  height: 3px;
+  width: 1.8px;
+  height: 1.8px;
   border-radius: 50%;
-  background: #F8E5B9;
-  box-shadow: 0 0 8px #D4AF6A;
+  background: #F1D59A;
+  box-shadow: 0 0 5px rgba(201, 161, 90, 0.7);
   opacity: 0;
-  animation: splashParticleFloat 1.2s ease-out forwards;
+  animation: splashParticleFloat 1.8s cubic-bezier(0.2, 0.8, 0.4, 1) forwards;
 }
 
 @keyframes splashParticleFloat {
   0% {
     opacity: 0;
-    transform: translateY(0) scale(0.5);
+    transform: translateY(0) scale(0.4);
   }
-  50% {
-    opacity: 1;
-    transform: translateY(-15px) scale(1.2);
+  40% {
+    opacity: 0.85;
+    transform: translateY(-22px) scale(1.1);
   }
   100% {
     opacity: 0;
-    transform: translateY(-30px) scale(0.3);
+    transform: translateY(-50px) scale(0.15);
+  }
+}
+
+/* Luxury Splash Visual Effects */
+.splash-gold-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, rgba(248, 229, 185, 0.45) 0%, rgba(212, 175, 106, 0.18) 40%, transparent 75%);
+  opacity: 0;
+}
+
+.splash-gold-flash.is-active {
+  animation: splashFlashPulse 0.32s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+@keyframes splashFlashPulse {
+  0% { opacity: 0; transform: scale(0.96); }
+  35% { opacity: 1; transform: scale(1.04); }
+  100% { opacity: 0; transform: scale(1.15); }
+}
+
+.splash-shockwave {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 140px;
+  height: 140px;
+  margin-top: -70px;
+  margin-left: -70px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(248, 229, 185, 0.95);
+  box-shadow: 0 0 24px rgba(212, 175, 106, 0.85), inset 0 0 16px rgba(241, 213, 154, 0.6);
+  pointer-events: none;
+  opacity: 0;
+  z-index: 8;
+}
+
+.splash-shockwave.is-active {
+  animation: splashShockwaveExpand 0.6s cubic-bezier(0.1, 0.85, 0.25, 1) forwards;
+}
+
+@keyframes splashShockwaveExpand {
+  0% { opacity: 1; transform: scale(0.15); }
+  50% { opacity: 0.9; }
+  100% { opacity: 0; transform: scale(3.2); }
+}
+
+.splash-halo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 280px;
+  height: 360px;
+  margin-top: -180px;
+  margin-left: -140px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(248, 229, 185, 0.28) 0%, rgba(201, 161, 90, 0.12) 45%, transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  z-index: 1;
+  transition: opacity 0.6s ease;
+}
+
+.splash-halo.is-active {
+  opacity: 1;
+}
+
+.splash-light-streak {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1px;
+  height: var(--streak-len, 80px);
+  background: linear-gradient(to top, rgba(255, 248, 231, 0.95), transparent);
+  transform-origin: bottom center;
+  pointer-events: none;
+  z-index: 9;
+  animation: splashStreakFly var(--duration, 0.6s) ease-out forwards;
+}
+
+@keyframes splashStreakFly {
+  0% {
+    opacity: 1;
+    transform: rotate(var(--angle)) translateY(0) scaleY(0.3);
+  }
+  60% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--angle)) translateY(calc(-1 * var(--dist, 100px))) scaleY(1.2);
   }
 }
