@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>방문 예약 | National Museum of Korea</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Noto+Serif+KR:wght@500;600&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="boutique.css">
+  <style>
+    /* Reservation Page Specific Luxury Styling */
+    .reservation-page {
+      background: #0c0907;
+      color: var(--color-text-primary);
+      min-height: 100vh;
+    }
+    .reservation-hero {
+      padding: 5rem 0 3.5rem;
+      background: radial-gradient(circle at 50% 20%, rgba(201, 161, 90, 0.09) 0%, transparent 70%), #0c0907;
+      border-bottom: 1px solid rgba(201, 161, 90, 0.12);
+      text-align: center;
+    }
+    .reservation-hero__label {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      color: var(--color-gold, #D4AF6A);
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+      display: block;
+    }
+    .reservation-hero__title {
+      font-family: var(--font-serif);
+      font-size: clamp(2rem, 4.5vw, 3.2rem);
+      font-weight: 600;
+      color: #f7f3ec;
+      margin-bottom: 1rem;
+    }
+    .reservation-hero__desc {
+      font-size: 0.95rem;
+      color: #8c8479;
+      max-width: 580px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+    
+    .reservation-main {
+      padding: 4.5rem 0 6rem;
+      background: #080605;
+    }
+    .reservation-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 0.85fr;
+      gap: 3.5rem;
+      align-items: start;
+    }
+    
+    .reservation-card {
+      background: rgba(18, 14, 11, 0.75);
+      border: 1px solid rgba(201, 161, 90, 0.18);
+      border-radius: 12px;
+      padding: 2.5rem;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(10px);
+    }
+    
+    .form-group {
+      margin-bottom: 2rem;
+    }
+    .form-label {
+      display: block;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-gold, #D4AF6A);
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+    }
+    .form-control {
+      width: 100%;
+      padding: 0.85rem 1.2rem;
+      background: rgba(10, 8, 6, 0.8);
+      border: 1px solid rgba(201, 161, 90, 0.22);
+      border-radius: 6px;
+      color: #f7f3ec;
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+    .form-control:focus {
+      border-color: var(--color-gold, #D4AF6A);
+      box-shadow: 0 0 12px rgba(201, 161, 90, 0.25);
+    }
+    
+    .time-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 0.8rem;
+    }
+    .time-btn {
+      padding: 0.7rem 0.5rem;
+      background: rgba(10, 8, 6, 0.8);
+      border: 1px solid rgba(201, 161, 90, 0.2);
+      border-radius: 6px;
+      color: #8c8479;
+      font-size: 0.82rem;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    .time-btn:hover, .time-btn.is-selected {
+      background: rgba(201, 161, 90, 0.15);
+      border-color: var(--color-gold, #D4AF6A);
+      color: #F1D59A;
+      box-shadow: 0 0 10px rgba(201, 161, 90, 0.2);
+    }
+    
+    .counter-control {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid rgba(201, 161, 90, 0.25);
+      border-radius: 6px;
+      background: rgba(10, 8, 6, 0.8);
+      overflow: hidden;
+    }
+    .counter-btn {
+      width: 42px;
+      height: 42px;
+      background: transparent;
+      border: none;
+      color: var(--color-gold, #D4AF6A);
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .counter-btn:hover {
+      background: rgba(201, 161, 90, 0.15);
+    }
+    .counter-val {
+      width: 50px;
+      text-align: center;
+      font-size: 0.95rem;
+      color: #f7f3ec;
+      font-weight: 600;
+    }
+    
+    .submit-btn {
+      width: 100%;
+      padding: 1.1rem;
+      background: linear-gradient(135deg, #D4AF6A 0%, #A98242 100%);
+      border: none;
+      border-radius: 6px;
+      color: #100c08;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(212, 175, 106, 0.3);
+      transition: all 0.4s ease;
+    }
+    .submit-btn:hover {
+      background: linear-gradient(135deg, #F1D59A 0%, #D4AF6A 100%);
+      box-shadow: 0 12px 30px rgba(241, 213, 154, 0.45);
+      transform: translateY(-2px);
+    }
+    
+    .info-card {
+      background: rgba(18, 14, 11, 0.55);
+      border: 1px solid rgba(201, 161, 90, 0.15);
+      border-radius: 12px;
+      padding: 2.2rem;
+    }
+    .info-title {
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      color: #f7f3ec;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(201, 161, 90, 0.15);
+      padding-bottom: 0.8rem;
+    }
+    .info-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 2rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .info-item__label {
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      color: var(--color-gold, #D4AF6A);
+      text-transform: uppercase;
+    }
+    .info-item__val {
+      font-size: 0.88rem;
+      color: #8c8479;
+      line-height: 1.6;
+    }
+    
+    /* Confirmation Toast Modal */
+    .reservation-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .reservation-modal.is-active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .reservation-modal__box {
+      background: #14100c;
+      border: 1px solid var(--color-gold, #D4AF6A);
+      border-radius: 12px;
+      padding: 2.5rem;
+      max-width: 440px;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+      transform: translateY(20px);
+      transition: transform 0.4s ease;
+    }
+    .reservation-modal.is-active .reservation-modal__box {
+      transform: translateY(0);
+    }
+    .reservation-modal__icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(201, 161, 90, 0.15);
+      color: var(--color-gold, #D4AF6A);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.2rem;
+    }
+    .reservation-modal__title {
+      font-family: var(--font-serif);
+      font-size: 1.4rem;
+      color: #f7f3ec;
+      margin-bottom: 0.8rem;
+    }
+    .reservation-modal__text {
+      font-size: 0.88rem;
+      color: #8c8479;
+      line-height: 1.6;
+      margin-bottom: 1.8rem;
+    }
+    
+    @media (max-width: 900px) {
+      .reservation-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+    }
+  </style>
+</head>
+<body class="reservation-page">
+
+  <!-- ============================================================
+     HEADER
+     ============================================================ -->
+  <header class="site-header site-header--static" id="siteHeader">
+    <div class="container site-header__inner">
+      <a href="index.html" class="logo">
+        <span class="logo__mark">NMK</span>
+        <span class="logo__name">
+          <span>NATIONAL MUSEUM</span>
+          <span>OF KOREA</span>
+        </span>
+      </a>
+
+      <nav class="site-nav">
+        <a href="exhibitions.html" class="site-nav__link">Exhibitions</a>
+        <a href="artifact.html" class="site-nav__link">Masterpiece</a>
+        <a href="boutique.html" class="site-nav__link">Boutique</a>
+        <a href="reservation.html" class="site-nav__link is-active">Reservation</a>
+      </nav>
+
+      <div class="site-header__utilities">
+        <button type="button" class="util-btn" aria-label="Language">ENG</button>
+        <button type="button" class="util-btn" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <circle cx="8" cy="8" r="6.2" stroke="currentColor" stroke-width="1.4" />
+            <path d="M12.4 12.4L17 17" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================================
+     HERO SECTION
+     ============================================================ -->
+  <section class="reservation-hero">
+    <div class="container">
+      <span class="reservation-hero__label">National Museum of Korea</span>
+      <h1 class="reservation-hero__title">Book Your Museum Visit</h1>
+      <p class="reservation-hero__desc">Reserve your visit online to experience thousands of years of Korean history, royal treasures, and masterworks with seamless entry.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+     RESERVATION MAIN SECTION
+     ============================================================ -->
+  <main class="reservation-main">
+    <div class="container">
+      <div class="reservation-grid">
+        
+        <!-- Reservation Form Card -->
+        <div class="reservation-card">
+          <form id="reservationForm" onsubmit="return false;">
+            
+            <!-- Date Selection -->
+            <div class="form-group">
+              <label class="form-label" for="visitDate">1. Select Visit Date (방문 날짜)</label>
+              <input type="date" class="form-control" id="visitDate" required>
+            </div>
+
+            <!-- Time Selection -->
+            <div class="form-group">
+              <label class="form-label">2. Select Time Slot (방문 시간)</label>
+              <div class="time-grid" id="timeGrid">
+                <button type="button" class="time-btn is-selected" data-time="10:00 AM">10:00 AM</button>
+                <button type="button" class="time-btn" data-time="11:30 AM">11:30 AM</button>
+                <button type="button" class="time-btn" data-time="01:30 PM">01:30 PM</button>
+                <button type="button" class="time-btn" data-time="03:00 PM">03:00 PM</button>
+                <button type="button" class="time-btn" data-time="04:30 PM">04:30 PM</button>
+              </div>
+            </div>
+
+            <!-- Visitor Count -->
+            <div class="form-group">
+              <label class="form-label">3. Visitors Count (방문 인원)</label>
+              <div class="counter-control">
+                <button type="button" class="counter-btn" id="btnMinus">-</button>
+                <span class="counter-val" id="visitorCountVal">1</span>
+                <button type="button" class="counter-btn" id="btnPlus">+</button>
+              </div>
+            </div>
+
+            <!-- Visitor Details -->
+            <div class="form-group">
+              <label class="form-label" for="visitorName">4. Visitor Information (예약자 정보)</label>
+              <input type="text" class="form-control" id="visitorName" placeholder="Full Name (성함)" required style="margin-bottom: 0.8rem;">
+              <input type="tel" class="form-control" id="visitorPhone" placeholder="Phone Number (연락처)" required>
+            </div>
+
+            <button type="submit" class="submit-btn" id="btnSubmitReservation">CONFIRM RESERVATION (예약하기)</button>
+          </form>
+        </div>
+
+        <!-- Museum Visitor Guidelines Info -->
+        <div class="info-card">
+          <h2 class="info-title">Visitor Guidelines (관람 안내)</h2>
+          <ul class="info-list">
+            <li class="info-item">
+              <span class="info-item__label">Opening Hours (관람 시간)</span>
+              <span class="info-item__val">Mon, Tue, Thu, Fri, Sun: 10:00 - 18:00<br>Wed, Sat: 10:00 - 21:00 (Night Opening)</span>
+            </li>
+            <li class="info-item">
+              <span class="info-item__label">Admission Fee (관람료)</span>
+              <span class="info-item__val">Free Entry for Main Permanent Exhibition Galleries.<br>Special exhibitions may require separate ticketing.</span>
+            </li>
+            <li class="info-item">
+              <span class="info-item__label">Reservation Terms (예약 유의사항)</span>
+              <span class="info-item__val">Please present your mobile confirmation or phone number at the entrance gate. Reservations can be modified up to 1 hour before entry.</span>
+            </li>
+            <li class="info-item">
+              <span class="info-item__label">Lockers &amp; Facilities (편의 시설)</span>
+              <span class="info-item__val">Free luggage lockers, strollers, and wheelchairs are available near the main lobby.</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Success Toast Modal -->
+  <div class="reservation-modal" id="reservationModal">
+    <div class="reservation-modal__box">
+      <div class="reservation-modal__icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h3 class="reservation-modal__title">Reservation Confirmed</h3>
+      <p class="reservation-modal__text" id="modalText">Your visit reservation at the National Museum of Korea has been successfully completed.</p>
+      <button type="button" class="submit-btn" id="modalCloseBtn">OK / 확인</button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+     FOOTER
+     ============================================================ -->
+  <footer class="site-footer">
+    <div class="container site-footer__container">
+      <div class="site-footer__grid">
+        <div class="footer-col footer-col--brand">
+          <a href="index.html" class="logo">
+            <span class="logo__mark">NMK</span>
+            <span class="logo__name">
+              <span>NATIONAL MUSEUM</span>
+              <span>OF KOREA</span>
+            </span>
+          </a>
+          <div class="footer-info-group">
+            <div class="footer-info-block">
+              <span class="footer-col__title">ADDRESS</span>
+              <address class="footer-text">
+                137 Seobinggo-ro, Yongsan-gu,<br>
+                Seoul 04383, Republic of Korea
+              </address>
+            </div>
+            <div class="footer-info-block">
+              <span class="footer-col__title">CONTACT</span>
+              <p class="footer-text">+82-2-2077-9000</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <span class="footer-col__title">QUICK LINKS</span>
+          <ul class="footer-col__list">
+            <li><a href="index.html">Visitor Information</a></li>
+            <li><a href="index.html">Directions</a></li>
+            <li><a href="exhibitions.html">Museum Guide</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Copyright Policy</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <span class="footer-col__title">FOLLOW NMK</span>
+          <ul class="footer-col__list">
+            <li><a href="#" target="_blank" rel="noopener">Blog</a></li>
+            <li><a href="#" target="_blank" rel="noopener">X</a></li>
+            <li><a href="#" target="_blank" rel="noopener">Facebook</a></li>
+            <li><a href="#" target="_blank" rel="noopener">Instagram</a></li>
+            <li><a href="#" target="_blank" rel="noopener">YouTube</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col footer-col--utils">
+          <span class="footer-col__title">PREFERENCES</span>
+          <div class="footer-utils-buttons">
+            <button type="button" class="footer-btn" aria-label="언어 선택">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <circle cx="9" cy="9" r="7.5" stroke="currentColor" stroke-width="1.2" />
+                <path d="M1.5 9h15M9 1.5c2.5 2 2.5 13 0 15M9 1.5c-2.5 2-2.5 13 0 15" stroke="currentColor" stroke-width="1.2" />
+              </svg>
+              <span>ENG</span>
+            </button>
+            <button type="button" class="footer-btn" aria-label="공유">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="13" cy="3" r="2" stroke="currentColor" stroke-width="1.2" />
+                <circle cx="3" cy="8" r="2" stroke="currentColor" stroke-width="1.2" />
+                <circle cx="13" cy="13" r="2" stroke="currentColor" stroke-width="1.2" />
+                <path d="M4.7 7l6.6-3M4.7 9l6.6 3" stroke="currentColor" stroke-width="1.2" />
+              </svg>
+              <span>SHARE</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="site-footer__bottom">
+        <div class="footer-bottom-divider"></div>
+        <p class="copyright">&copy; National Museum of Korea. All Rights Reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="cursor.js"></script>
+  <script>
+    // Form Interaction Script
+    document.addEventListener('DOMContentLoaded', () => {
+      // Default Date = Tomorrow
+      const dateInput = document.getElementById('visitDate');
+      if (dateInput) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        dateInput.value = tomorrow.toISOString().split('T')[0];
+      }
+
+      // Time Select
+      const timeBtns = document.querySelectorAll('.time-btn');
+      let selectedTime = '10:00 AM';
+      timeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          timeBtns.forEach(b => b.classList.remove('is-selected'));
+          btn.classList.add('is-selected');
+          selectedTime = btn.dataset.time;
+        });
+      });
+
+      // Counter Control
+      let visitorCount = 1;
+      const countVal = document.getElementById('visitorCountVal');
+      document.getElementById('btnMinus').addEventListener('click', () => {
+        if (visitorCount > 1) {
+          visitorCount--;
+          countVal.textContent = visitorCount;
+        }
+      });
+      document.getElementById('btnPlus').addEventListener('click', () => {
+        if (visitorCount < 10) {
+          visitorCount++;
+          countVal.textContent = visitorCount;
+        }
+      });
+
+      // Submit Form Modal
+      const modal = document.getElementById('reservationModal');
+      const form = document.getElementById('reservationForm');
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const date = dateInput.value;
+        const name = document.getElementById('visitorName').value;
+        document.getElementById('modalText').innerHTML = `Dear <strong>${name}</strong>,<br>Your reservation for <strong>${visitorCount} visitor(s)</strong> on <strong>${date} (${selectedTime})</strong> has been confirmed.`;
+        modal.classList.add('is-active');
+      });
+
+      document.getElementById('modalCloseBtn').addEventListener('click', () => {
+        modal.classList.remove('is-active');
+      });
+    });
+  </script>
+</body>
+</html>

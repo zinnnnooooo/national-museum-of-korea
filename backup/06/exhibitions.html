@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exhibitions &amp; Events | 국립중앙박물관</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Noto+Serif+KR:wght@500;600&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="subpage-body">
+
+<!-- ============================================================
+     HEADER (Shared NMK Design)
+     ============================================================ -->
+<header class="site-header" id="siteHeader">
+  <div class="container site-header__inner">
+    <a href="index.html" class="logo">
+      <span class="logo__mark">NMK</span>
+      <span class="logo__name">
+        <span>NATIONAL MUSEUM</span>
+        <span>OF KOREA</span>
+      </span>
+    </a>
+
+    <nav class="main-nav">
+      <a href="exhibitions.html" class="is-active" data-nav="exhibitions">Exhibitions</a>
+      <a href="visit.html" data-nav="visit">Visit &amp; Book</a>
+      <a href="#" data-nav="members">Members</a>
+      <a href="#" data-nav="education">Education</a>
+      <a href="#" data-nav="research">Research</a>
+      <a href="#" data-nav="about">About</a>
+    </nav>
+
+    <div class="header-utils">
+      <button class="lang" type="button">ENG
+        <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.2"/></svg>
+      </button>
+      <button type="button" aria-label="검색">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      </button>
+      <button type="button" aria-label="메뉴">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="none"><path d="M0 1h18M0 6h18M0 11h18" stroke="currentColor" stroke-width="1.2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mega Dropdown Panel -->
+  <div class="header-dropdown" id="headerDropdown" aria-hidden="true">
+    <div class="container header-dropdown__inner">
+
+      <!-- 01 Exhibitions Pane -->
+      <div class="dropdown-pane" data-pane="exhibitions">
+        <div class="dropdown-pane__info">
+          <span class="dropdown-pane__category">EXHIBITIONS</span>
+          <h3 class="dropdown-pane__title">Exhibitions &amp; Displays</h3>
+          <p class="dropdown-pane__desc">Explore 5,000 years of Korean heritage and world-class museum collections.</p>
+        </div>
+        <ul class="dropdown-pane__list">
+          <li><a href="exhibitions.html">Current Exhibitions</a></li>
+          <li><a href="exhibitions.html#upcoming">Upcoming Exhibitions</a></li>
+          <li><a href="exhibitions.html#special">Special Exhibitions</a></li>
+          <li><a href="exhibitions.html#past">Past Exhibitions</a></li>
+          <li><a href="artifact.html">Exhibition Highlights</a></li>
+        </ul>
+      </div>
+
+      <!-- 02 Visit & Book Pane -->
+      <div class="dropdown-pane" data-pane="visit">
+        <div class="dropdown-pane__info">
+          <span class="dropdown-pane__category">VISIT &amp; BOOK</span>
+          <h3 class="dropdown-pane__title">Plan Your Museum Visit</h3>
+          <p class="dropdown-pane__desc">Opening hours, ticket reservations, directions, and visitor amenities.</p>
+        </div>
+        <ul class="dropdown-pane__list">
+          <li><a href="visit.html">Visitor Information</a></li>
+          <li><a href="visit.html#hours">Opening Hours</a></li>
+          <li><a href="reservation.html">Tickets &amp; Reservations</a></li>
+          <li><a href="visit.html#directions">Directions</a></li>
+          <li><a href="visit.html#floor">Floor Guide</a></li>
+          <li><a href="visit.html#accessibility">Accessibility</a></li>
+        </ul>
+      </div>
+
+      <!-- 03 Members Pane -->
+      <div class="dropdown-pane" data-pane="members">
+        <div class="dropdown-pane__info">
+          <span class="dropdown-pane__category">MEMBERS</span>
+          <h3 class="dropdown-pane__title">Membership Community</h3>
+          <p class="dropdown-pane__desc">Exclusive member benefits, priority ticketing, and private exhibition viewings.</p>
+        </div>
+        <ul class="dropdown-pane__list">
+          <li><a href="#">Membership</a></li>
+          <li><a href="#">Member Benefits</a></li>
+          <li><a href="#">Join Membership</a></li>
+          <li><a href="#">Member Programs</a></li>
+        </ul>
+      </div>
+
+      <!-- 04 Education Pane -->
+      <div class="dropdown-pane" data-pane="education">
+        <div class="dropdown-pane__info">
+          <span class="dropdown-pane__category">EDUCATION</span>
+          <h3 class="dropdown-pane__title">Learning &amp; Discovery</h3>
+          <p class="dropdown-pane__desc">Enriching cultural education for children, adults, schools, and families.</p>
+        </div>
+        <ul class="dropdown-pane__list">
+          <li><a href="#">Educational Programs</a></li>
+          <li><a href="#">Children &amp; Families</a></li>
+          <li><a href="#">School Programs</a></li>
+          <li><a href="#">Adult Programs</a></li>
+          <li><a href="#">Online Learning</a></li>
+        </ul>
+      </div>
+
+      <!-- 05 Research Pane -->
+      <div class="dropdown-pane" data-pane="research">
+        <div class="dropdown-pane__info">
+          <span class="dropdown-pane__category">RESEARCH</span>
+          <h3 class="dropdown-pane__title">Collection &amp; Research</h3>
+          <p class="dropdown-pane__desc">Academic publications, artifact conservation, and digital museum archives.</p>
+        </div>
+        <ul class="dropdown-pane__list">
+          <li><a href="heritage.html">Collection Research</a></li>
+          <li><a href="#">Conservation</a></li>
+          <li><a href="#">Publications</a></li>
+          <li><a href="#">Museum Archives</a></li>
+          <li><a href="#">Academic Resources</a></li>
+        </ul>
+      </div>
+
+      <!-- 06 About Pane -->
+      <div class="dropdown-pane" data-pane="about">
+        <div class="dropdown-pane__info">
+          <span class="dropdown-pane__category">ABOUT</span>
+          <h3 class="dropdown-pane__title">National Museum of Korea</h3>
+          <p class="dropdown-pane__desc">Preserving cultural heritage and fostering global artistic dialogue.</p>
+        </div>
+        <ul class="dropdown-pane__list">
+          <li><a href="#">About NMK</a></li>
+          <li><a href="#">Museum History</a></li>
+          <li><a href="#">Architecture</a></li>
+          <li><a href="#">News &amp; Notices</a></li>
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     EXHIBITIONS HERO SECTION
+     ============================================================ -->
+<section class="section exhibitions-hero">
+  <div class="container">
+    <span class="label-overline" data-reveal>EXHIBITIONS &amp; EVENTS</span>
+    <h1 class="exhibitions-hero__title" data-reveal>Discover What’s<br>Happening at the Museum</h1>
+    <p class="exhibitions-hero__desc" data-reveal>Explore current exhibitions, upcoming programs, and cultural experiences at the National Museum of Korea.</p>
+
+    <!-- Filter Tab Pills -->
+    <div class="exhibition-filters" data-reveal>
+      <button class="filter-pill is-active" data-filter="all">ALL</button>
+      <button class="filter-pill" data-filter="current">CURRENT</button>
+      <button class="filter-pill" data-filter="upcoming">UPCOMING</button>
+      <button class="filter-pill" data-filter="events">EVENTS</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CURRENT FEATURED EXHIBITION SECTION
+     ============================================================ -->
+<div class="filter-target" data-category="current">
+  <section class="section featured-exhibition">
+    <div class="container">
+      <div class="featured-exhibition__grid">
+        <div class="featured-exhibition__image-wrap" data-reveal="scale">
+          <img src="design/art_12.png" alt="Featured Exhibition: Silla Gold Crown">
+        </div>
+        <div class="featured-exhibition__info" data-reveal>
+          <span class="label-overline">FEATURED EXHIBITION</span>
+          <h2 class="featured-exhibition__title">The Golden Art of Silla</h2>
+          <p class="featured-exhibition__date">2026.09.01 — 2026.12.31</p>
+          <p class="featured-exhibition__location">Special Exhibition Gallery, 1F</p>
+          <p class="featured-exhibition__desc">Explore the brilliant golden craft and majestic crowns excavated from ancient tombs, representing the peak of Silla dynasty aesthetics and cultural connections.</p>
+          <a href="artifact.html" class="link-arrow">VIEW EXHIBITION
+            <svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5h10M6 1l5 4-5 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ============================================================
+     CURRENT NORMAL EXHIBITIONS SECTION (GRID)
+     ============================================================ -->
+<section class="section current-grid-section filter-target" data-category="current">
+  <div class="container">
+    <div class="exhibition-grid">
+      <!-- Ex 1 -->
+      <div class="exhibition-card" data-reveal>
+        <div class="exhibition-card__image">
+          <img src="design/art_1.jpg" alt="Korean Buddhist Sculpture">
+        </div>
+        <div class="exhibition-card__info">
+          <span class="exhibition-card__status">CURRENT</span>
+          <h3 class="exhibition-card__title">Masterpieces of Korean Buddhist Sculpture</h3>
+          <p class="exhibition-card__meta">Ongoing · Gallery 2F</p>
+          <a href="artifact.html" class="exhibition-card__link">VIEW DETAILS ↗</a>
+        </div>
+      </div>
+      <!-- Ex 2 -->
+      <div class="exhibition-card" data-reveal>
+        <div class="exhibition-card__image">
+          <img src="design/art_3.png" alt="Beauty of Goryeo Celadon">
+        </div>
+        <div class="exhibition-card__info">
+          <span class="exhibition-card__status">CURRENT</span>
+          <h3 class="exhibition-card__title">Beauty of Goryeo Celadon</h3>
+          <p class="exhibition-card__meta">Until 2026.10.15 · Gallery 2F</p>
+          <a href="#" class="exhibition-card__link">VIEW DETAILS ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     UPCOMING EXHIBITIONS SECTION (EDITORIAL LIST)
+     ============================================================ -->
+<section class="section upcoming-section filter-target" data-category="upcoming">
+  <div class="container">
+    <div class="upcoming-heading" data-reveal>
+      <span class="label-overline">EXHIBITIONS</span>
+      <h2 class="section-title">Upcoming Exhibitions</h2>
+    </div>
+
+    <div class="upcoming-list">
+      <!-- Item 1 -->
+      <div class="upcoming-row" data-reveal>
+        <div class="upcoming-row__date">
+          <span class="upcoming-row__month">JAN</span>
+          <span class="upcoming-row__day">15</span>
+          <span class="upcoming-row__year">2027</span>
+        </div>
+        <div class="upcoming-row__info">
+          <h3 class="upcoming-row__title">Joseon Dynasty Lacquerware</h3>
+          <p class="upcoming-row__desc">A comprehensive exhibition featuring precious mother-of-pearl lacquer cases, reflecting late Joseon nobility tastes.</p>
+        </div>
+        <div class="upcoming-row__arrow">
+          <svg width="14" height="10" viewBox="0 0 14 10" fill="none"><path d="M1 5h12M8 1l5 4-5 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+
+      <!-- Item 2 -->
+      <div class="upcoming-row" data-reveal>
+        <div class="upcoming-row__date">
+          <span class="upcoming-row__month">MAR</span>
+          <span class="upcoming-row__day">10</span>
+          <span class="upcoming-row__year">2027</span>
+        </div>
+        <div class="upcoming-row__info">
+          <h3 class="upcoming-row__title">Ancient Baekje Incense Burner</h3>
+          <p class="upcoming-row__desc">Special focus exhibition exploring international craft trades and symbolism embedded in the Baekje incense burner.</p>
+        </div>
+        <div class="upcoming-row__arrow">
+          <svg width="14" height="10" viewBox="0 0 14 10" fill="none"><path d="M1 5h12M8 1l5 4-5 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     EVENTS & PROGRAMS SECTION
+     ============================================================ -->
+<section class="section events-section filter-target" data-category="events">
+  <div class="container">
+    <div class="events-heading" data-reveal>
+      <span class="label-overline">PROGRAMS</span>
+      <h2 class="section-title">Events &amp; Programs</h2>
+    </div>
+
+    <div class="events-grid">
+      <!-- Program 1 -->
+      <div class="event-card" data-reveal>
+        <div class="event-card__header">
+          <span class="event-card__category">LECTURE</span>
+          <span class="event-card__date">Every Saturday</span>
+        </div>
+        <h3 class="event-card__title">Curator Talk: Ancient Treasures</h3>
+        <p class="event-card__desc">Listen to direct insights and archaeological backgrounds from the museum curators on selected National Treasures.</p>
+      </div>
+
+      <!-- Program 2 -->
+      <div class="event-card" data-reveal>
+        <div class="event-card__header">
+          <span class="event-card__category">WORKSHOP</span>
+          <span class="event-card__date">Every Sunday</span>
+        </div>
+        <h3 class="event-card__title">Family Program: Traditional Clay Art</h3>
+        <p class="event-card__desc">A hands-on ceramic creation workshop using traditional Korean clay and carving techniques for parents and children.</p>
+      </div>
+
+      <!-- Program 3 -->
+      <div class="event-card" data-reveal>
+        <div class="event-card__header">
+          <span class="event-card__category">TOUR</span>
+          <span class="event-card__date">Daily, 14:00</span>
+        </div>
+        <h3 class="event-card__title">Guided Gallery Tour (English)</h3>
+        <p class="event-card__desc">Join an expert english docent to walk through the major historical galleries and masterworks of Korean civilization.</p>
+      </div>
+
+      <!-- Program 4 -->
+      <div class="event-card" data-reveal>
+        <div class="event-card__header">
+          <span class="event-card__category">DIGITAL</span>
+          <span class="event-card__date">Ongoing</span>
+        </div>
+        <h3 class="event-card__title">Digital Heritage VR Experience</h3>
+        <p class="event-card__desc">A state-of-the-art virtual reality theater allowing visitors to step inside hidden excavation tombs and ancient temples.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer class="site-footer">
+  <div class="container site-footer__container">
+    <div class="site-footer__grid">
+      <!-- Column 1: Brand & Contact -->
+      <div class="footer-col footer-col--brand">
+        <a href="index.html" class="logo">
+          <span class="logo__mark">NMK</span>
+          <span class="logo__name">
+            <span>NATIONAL MUSEUM</span>
+            <span>OF KOREA</span>
+          </span>
+        </a>
+        
+        <div class="footer-info-group">
+          <div class="footer-info-block">
+            <span class="footer-col__title">ADDRESS</span>
+            <address class="footer-text">
+              137 Seobinggo-ro, Yongsan-gu,<br>
+              Seoul 04383, Republic of Korea
+            </address>
+          </div>
+          <div class="footer-info-block">
+            <span class="footer-col__title">CONTACT</span>
+            <p class="footer-text">+82-2-2077-9000</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Column 2: Quick Links -->
+      <div class="footer-col">
+        <span class="footer-col__title">QUICK LINKS</span>
+        <ul class="footer-col__list">
+          <li><a href="index.html">Visitor Information</a></li>
+          <li><a href="index.html">Directions</a></li>
+          <li><a href="exhibitions.html">Museum Guide</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Copyright Policy</a></li>
+        </ul>
+      </div>
+
+      <!-- Column 3: Follow NMK -->
+      <div class="footer-col">
+        <span class="footer-col__title">FOLLOW NMK</span>
+        <ul class="footer-col__list">
+          <li><a href="#" target="_blank" rel="noopener">Blog</a></li>
+          <li><a href="#" target="_blank" rel="noopener">X</a></li>
+          <li><a href="#" target="_blank" rel="noopener">Facebook</a></li>
+          <li><a href="#" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="#" target="_blank" rel="noopener">YouTube</a></li>
+        </ul>
+      </div>
+
+      <!-- Column 4: Preferences & Utilities -->
+      <div class="footer-col footer-col--utils">
+        <span class="footer-col__title">PREFERENCES</span>
+        <div class="footer-utils-buttons">
+          <button type="button" class="footer-btn" aria-label="언어 선택">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <circle cx="9" cy="9" r="7.5" stroke="currentColor" stroke-width="1.2" />
+              <path d="M1.5 9h15M9 1.5c2.5 2 2.5 13 0 15M9 1.5c-2.5 2-2.5 13 0 15" stroke="currentColor" stroke-width="1.2" />
+            </svg>
+            <span>ENG</span>
+          </button>
+          <button type="button" class="footer-btn" aria-label="공유">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="13" cy="3" r="2" stroke="currentColor" stroke-width="1.2" />
+              <circle cx="3" cy="8" r="2" stroke="currentColor" stroke-width="1.2" />
+              <circle cx="13" cy="13" r="2" stroke="currentColor" stroke-width="1.2" />
+              <path d="M4.7 7l6.6-3M4.7 9l6.6 3" stroke="currentColor" stroke-width="1.2" />
+            </svg>
+            <span>SHARE</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Bar & Copyright -->
+    <div class="site-footer__bottom">
+      <div class="footer-bottom-divider"></div>
+      <p class="copyright">&copy; National Museum of Korea. All Rights Reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================
+     SEARCH POPUP (Shared Modal)
+     ============================================================ -->
+<div class="search-popup" id="searchPopup" aria-hidden="true">
+  <div class="search-popup__backdrop"></div>
+  <div class="search-popup__container">
+    <div class="search-popup__header">
+      <span class="search-popup__brand">National Museum of Korea</span>
+      <button class="search-popup__close" id="searchPopupClose" type="button">
+        CLOSE (ESC) <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.3"/></svg>
+      </button>
+    </div>
+
+    <div class="search-popup__content">
+      <div class="search-popup__left">
+        <div class="search-popup__input-wrap">
+          <input type="text" id="popupSearchInput" placeholder="Type to search..." autocomplete="off">
+        </div>
+        <p class="search-popup__label">SEARCH RESULTS</p>
+        <div class="search-popup__list" id="popupSearchList"></div>
+      </div>
+
+      <div class="search-popup__right">
+        <svg class="search-popup__map" viewBox="0 0 500 300" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <pattern id="blueprintGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(201, 161, 90, 0.04)" stroke-width="0.5"/>
+            </pattern>
+          </defs>
+          <rect width="500" height="300" fill="url(#blueprintGrid)" rx="6"/>
+          <rect class="map-outline" x="15" y="25" width="470" height="250" rx="6" fill="none" stroke="rgba(201, 161, 90, 0.12)" stroke-width="1.2" stroke-dasharray="4 4"/>
+          <rect class="map-outline-inner" x="20" y="30" width="460" height="240" rx="5" fill="none" stroke="rgba(201, 161, 90, 0.06)" stroke-width="0.8"/>
+          <path class="map-corridor" d="M120 142h260v16H120z M242 70h16v160h-16z M70 142v60 M430 142v60" fill="none" stroke="rgba(201, 161, 90, 0.14)" stroke-width="0.75" stroke-dasharray="2 2"/>
+
+          <!-- Rooms -->
+          <path class="map-room" id="room-incense-burner" d="M 60 110 h 90 v 50 h -30 v 30 h -60 z" />
+          <circle class="map-room" id="room-pensive-bodhisattva" cx="250" cy="150" r="44" />
+          <circle cx="250" cy="150" r="50" fill="none" stroke="rgba(201, 161, 90, 0.1)" stroke-width="0.5" stroke-dasharray="2 2"/>
+          <path class="map-room" id="room-moon-jar" d="M 350 110 h 90 v 80 h -90 v -30 h 40 v -20 h -40 z" />
+          <rect class="map-room" id="room-silla-crown" x="40" y="45" width="70" height="45" rx="1.5" fill="none" stroke="rgba(201, 161, 90, 0.12)" stroke-width="0.75" />
+          <rect class="map-dummy-room" x="120" y="45" width="75" height="45" rx="1.5" fill="none" stroke="rgba(201, 161, 90, 0.12)" stroke-width="0.75" />
+          <rect class="map-dummy-room" x="205" y="45" width="30" height="55" rx="1" fill="none" stroke="rgba(201, 161, 90, 0.12)" stroke-width="0.75" />
+          <rect class="map-dummy-room" x="265" y="45" width="30" height="55" rx="1" fill="none" stroke="rgba(201, 161, 90, 0.12)" stroke-width="0.75" />
+          <rect class="map-room" id="room-celadon-ewer" x="305" y="45" width="75" height="45" rx="1.5" fill="none" stroke="rgba(201, 161, 90, 0.12)" stroke-width="0.75" />
+          <rect class="map-dummy-room" x="390" y="45" width="70" height="45" rx="1.5" fill="none" stroke="rgba(201, 161, 90, 0.12)" stroke-width="0.75" />
+          <rect class="map-dummy-room" x="40" y="210" width="70" height="45" rx="1.5" fill="none" stroke="rgba(201, 161, 90, 0.12)" stroke-width="0.75" />
+          <path class="map-room" id="room-incense-burner-compact" d="M 120 210 h 75 v 45 h -75 v -15 h 35 v -15 h -35 z" stroke-width="0.75" />
+          <rect class="map-dummy-room" x="205" y="205" width="30" height="50" rx="1" fill="none" stroke="rgba(201, 161, 90, 0.12)" stroke-width="0.75" />
+          <path class="map-dummy-room" d="M 265 205 h 30 v 50 h 75 v -45 h -105 z" stroke-width="0.75" />
+          <rect class="map-room" id="room-lacquerware-box" x="390" y="210" width="70" height="45" rx="1.5" stroke-width="0.75" />
+
+          <!-- Symbols -->
+          <g class="map-symbol"><rect x="205" y="112" width="14" height="14" fill="none" stroke="rgba(201, 161, 90, 0.25)" stroke-width="0.75"/><path d="M205 112l14 14 M219 112l-14 14" stroke="rgba(201, 161, 90, 0.2)" stroke-width="0.5"/><text x="212" y="106" text-anchor="middle" fill="rgba(201, 161, 90, 0.25)" font-size="5" font-family="sans-serif">ELV</text></g>
+          <g class="map-symbol"><rect x="281" y="112" width="14" height="14" fill="none" stroke="rgba(201, 161, 90, 0.25)" stroke-width="0.75"/><path d="M281 115h14 M281 118h14 M281 121h14 M281 124h14" stroke="rgba(201, 161, 90, 0.25)" stroke-width="0.5"/><text x="288" y="106" text-anchor="middle" fill="rgba(201, 161, 90, 0.25)" font-size="5" font-family="sans-serif">STAIRS</text></g>
+          <g class="map-symbol"><path d="M250 273v-16 M247 262l3-5 3 5" fill="none" stroke="rgba(201, 161, 90, 0.35)" stroke-width="0.8"/><text x="250" y="282" text-anchor="middle" fill="rgba(201, 161, 90, 0.3)" font-size="6" font-family="sans-serif" letter-spacing="0.1em">MAIN ENTRANCE</text></g>
+
+          <text x="75" y="60" fill="rgba(201, 161, 90, 0.18)" font-size="6" font-family="sans-serif">G102</text>
+          <text x="155" y="60" fill="rgba(201, 161, 90, 0.18)" font-size="6" font-family="sans-serif">G103</text>
+          <text x="340" y="60" fill="rgba(201, 161, 90, 0.18)" font-size="6" font-family="sans-serif">G106</text>
+          <text x="425" y="60" fill="rgba(201, 161, 90, 0.18)" font-size="6" font-family="sans-serif">G107</text>
+          <text x="250" y="135" text-anchor="middle" fill="rgba(201, 161, 90, 0.35)" font-size="6" font-family="sans-serif">HALL</text>
+
+          <!-- Pin -->
+          <g class="map-pin-group">
+            <circle class="map-pin-pulse" id="mapPinPulse" cx="250" cy="150" r="14" />
+            <circle class="map-pin" id="mapPin" cx="250" cy="150" r="4.5" />
+          </g>
+        </svg>
+        <div class="search-popup__tooltip" id="mapTooltip">
+          <span class="tooltip-text" id="tooltipText">ROOM OF QUIET CONTEMPLATION | 2F</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Page Transition Clip Layer -->
+<div class="page-transition-layer" id="pageTransitionLayer"></div>
+
+<script src="script.js"></script>
+<script>
+  // subpage reveal interaction on load
+  document.addEventListener('DOMContentLoaded', () => {
+    const reveals = document.querySelectorAll('[data-reveal]');
+    reveals.forEach((el, index) => {
+      setTimeout(() => {
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      }, index * 100 + 100);
+    });
+
+    // JavaScript Filter logic for exhibitions
+    const filterPills = document.querySelectorAll('.filter-pill');
+    const filterTargets = document.querySelectorAll('.filter-target');
+
+    filterPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        // active state switch
+        filterPills.forEach(p => p.classList.remove('is-active'));
+        pill.classList.add('is-active');
+
+        const cat = pill.getAttribute('data-filter');
+
+        filterTargets.forEach(target => {
+          const targetCat = target.getAttribute('data-category');
+          if (cat === 'all' || cat === targetCat) {
+            target.style.display = 'block';
+            setTimeout(() => {
+              target.style.opacity = '1';
+              target.style.transform = 'translateY(0)';
+            }, 50);
+          } else {
+            target.style.opacity = '0';
+            target.style.transform = 'translateY(15px)';
+            // Hide after fadeout transition
+            setTimeout(() => {
+              if (!pill.classList.contains('is-active')) return; // double check
+              target.style.display = 'none';
+            }, 400);
+          }
+        });
+      });
+    });
+  });
+</script>
+<script src="cursor.js"></script>
+</body>
+</html>

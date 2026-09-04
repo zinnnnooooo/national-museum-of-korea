@@ -223,7 +223,7 @@ function initCustomCursor() {
     }
   }
 
-  const hoverSelectors = 'a, button, [role="button"], input, select, textarea, .hero-nav-btn, .hero-nav-item, .hero-quick-nav__item, .hero-quick-nav__video, .category-tags button, .product-card, .filter-pill, .artifact-card, .exhibition-card, label, [tabindex]';
+  const hoverSelectors = 'a, button, [role="button"], input, select, textarea, .hero-nav-btn, .hero-quick-nav__item, .hero-quick-nav__video, .category-tags button, .product-card, .filter-pill, .artifact-card, .exhibition-card, label, [tabindex]';
 
   document.addEventListener('mouseover', (e) => {
     if (e.target && e.target.closest && e.target.closest(hoverSelectors)) {

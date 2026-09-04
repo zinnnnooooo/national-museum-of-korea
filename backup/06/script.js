@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initSplashScreen();
   initCustomCursor();
   initHeroScrub();
-  initHeroFloatingMenu();
   initHeaderScroll();
   initHeaderDropdown();
   initScrollReveal();
@@ -402,20 +401,6 @@ function initHeroScrub() {
       lastVariant = null;
       setupArchiveContent(v);
     }
-
-    // Hero Navigator active 버튼 동기화
-    updateHeroNavigatorActive(v);
-  }
-
-  function updateHeroNavigatorActive(v) {
-    const navItems = document.querySelectorAll('.hero-nav-item');
-    navItems.forEach(item => {
-      if (item.getAttribute('data-hero') === v) {
-        item.classList.add('is-active');
-      } else {
-        item.classList.remove('is-active');
-      }
-    });
   }
 
   // 특정 Hero의 프레임 로딩 및 렌더링 함수
@@ -550,44 +535,26 @@ function initHeroScrub() {
   }
   requestAnimationFrame(tick);
 
-  // Hero counter update function (01 / 03)
-  const heroNavCurrentNum = document.getElementById('heroNavCurrentNum');
-
-  function updateHeroNavCounter(index, animate = true) {
-    if (!heroNavCurrentNum) return;
-    const formattedNum = String(index + 1).padStart(2, '0');
-
-    if (animate) {
-      heroNavCurrentNum.classList.add('is-changing');
-      setTimeout(() => {
-        heroNavCurrentNum.textContent = formattedNum;
-        heroNavCurrentNum.style.transform = 'translateY(6px)';
-        void heroNavCurrentNum.offsetWidth; // force reflow
-        heroNavCurrentNum.style.transform = '';
-        heroNavCurrentNum.classList.remove('is-changing');
-      }, 150);
-    } else {
-      heroNavCurrentNum.textContent = formattedNum;
-    }
-  }
-
-  // 초기 1단계 기동 (variant 셋업 & 카운터/네비게이터 초기화)
+  // 초기 1단계 기동 (baekje로 셋업)
   switchHeroUI(variant);
   loadAndDrawHero(variant);
 
   // ============================================================
-  // HERO NAVIGATOR CLICK HANDLERS (01 BAEKJE / 02 BODHISATTVA / 03 SILLA)
+  // HERO NAVIGATION CLICK HANDLERS (이전 / 다음 화살표 클릭)
   // ============================================================
-  function transitionToVariant(nextVariant) {
+  const prevBtn = document.getElementById('heroPrevBtn');
+  const nextBtn = document.getElementById('heroNextBtn');
+
+  function transitionHero(direction) {
     if (isTransitioning) return;
     isTransitioning = true;
 
-    // 1. 스크롤 위치 및 프레임 초기화
+    // 1. 스크롤 위치 초기화 (스무스하게 스크롤업 하여 자연스럽게 리셋)
     window.scrollTo({ top: 0, behavior: 'auto' });
     targetFrame = 1;
     currentFrame = 1;
 
-    // 2. 캔버스 및 Hero 카피 텍스트 페이드아웃
+    // 2. 아웃 페이드 아웃 시작
     canvas.style.opacity = 0;
     const heroCopyEl = document.querySelector('.hero-copy');
     if (heroCopyEl) {
@@ -596,90 +563,46 @@ function initHeroScrub() {
       heroCopyEl.style.transform = 'translateY(-8px)';
     }
 
-    const nextIdx = heroList.indexOf(nextVariant);
-    if (nextIdx !== -1) {
-      currentHeroIndex = nextIdx;
+    // 3. 인덱스 계산
+    if (direction === 'next') {
+      currentHeroIndex = (currentHeroIndex + 1) % heroList.length;
+    } else {
+      currentHeroIndex = (currentHeroIndex - 1 + heroList.length) % heroList.length;
     }
-    updateHeroNavCounter(currentHeroIndex, true);
-    updateHeroNavigatorActive(nextVariant);
+    const nextVariant = heroList[currentHeroIndex];
 
     setTimeout(() => {
-      // 3. Variant 교환 및 UI 업데이트
+      // 4. Variant 교환 및 UI 업데이트
       variant = nextVariant;
       localStorage.setItem(STORAGE_KEY, variant);
       switchHeroUI(variant);
 
-      // 4. 첫 번째 프레임 로드 및 렌더링
+      // 5. 첫 번째 프레임 로드 및 렌더링
       loadAndDrawHero(variant, () => {
-        // 5. 렌더 완료 후 인 페이드인 시작
+        // 6. 렌더 완료 후 인 페이드 인 시작
         canvas.style.opacity = 1;
         if (heroCopyEl) {
           heroCopyEl.style.opacity = 1;
           heroCopyEl.style.transform = 'translateY(0)';
         }
-        // 6. 진행 상태 강제 업데이트
+        // 7. 진행 상태 강제 업데이트
         updateScroll();
         isTransitioning = false;
       });
-    }, 350);
+    }, 350); // CSS opacity 트랜지션 타임라인에 맞춤 (0.35초)
   }
 
-  // Hero Navigator 버튼 클릭 이벤트 연결
-  const heroNavItems = document.querySelectorAll('.hero-nav-item');
-  heroNavItems.forEach(item => {
-    item.addEventListener('click', (e) => {
+  if (prevBtn) {
+    prevBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      const targetVariant = item.getAttribute('data-hero');
-      if (!targetVariant || targetVariant === variant || isTransitioning) return;
-      transitionToVariant(targetVariant);
+      transitionHero('prev');
     });
-  });
-}
-
-/* ---------- Hero Floating Quick Menu (Bottom-Right Gemini Gold Mark) ---------- */
-function initHeroFloatingMenu() {
-  const floatingMenu = document.getElementById('heroFloatingMenu');
-  const floatingTrigger = document.getElementById('heroFloatingTrigger');
-  const floatingVideoBtn = document.getElementById('floatingVideoBtn');
-
-  if (!floatingMenu || !floatingTrigger) return;
-
-  function closeMenu() {
-    floatingMenu.classList.remove('is-open');
   }
 
-  function toggleMenu() {
-    floatingMenu.classList.toggle('is-open');
-  }
-
-  floatingTrigger.addEventListener('click', (e) => {
-    e.stopPropagation();
-    toggleMenu();
-  });
-
-  // Close when clicking outside panel
-  document.addEventListener('click', (e) => {
-    if (floatingMenu.classList.contains('is-open') && !floatingMenu.contains(e.target)) {
-      closeMenu();
-    }
-  });
-
-  // Close on ESC key press
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && floatingMenu.classList.contains('is-open')) {
-      closeMenu();
-    }
-  });
-
-  // Handle Video button inside floating quick menu
-  if (floatingVideoBtn) {
-    floatingVideoBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      closeMenu();
-      const videoTarget = document.querySelector('.hero-quick-nav__video, [data-video-modal], .header-utils button');
-      if (videoTarget) {
-        videoTarget.click();
-      }
+  if (nextBtn) {
+    nextBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      transitionHero('next');
     });
   }
 }
@@ -1555,250 +1478,1019 @@ function initHeritageSlider() {
 /* ---------- Splash Loading Screen System ---------- */
 function initSplashScreen() {
   const splashScreen = document.getElementById('splashScreen');
-  const splashEncryptedText = document.getElementById('splashEncryptedText');
-  const splashVideo = document.getElementById('splashVideo');
-  const splashFrameImg = document.getElementById('splashFrameImg');
+  const splashPercent = document.getElementById('splashPercent');
+  const splashWavePath = document.getElementById('splashWavePath');
+  const splashParticles = document.getElementById('splashParticles');
   const statueWrap = document.getElementById('splashStatueWrap');
+  const splashLiquidLayer = document.getElementById('splashLiquidLayer');
+  const imgSource = document.getElementById('splashImgSource');
+  const splashWaveSvg = document.querySelector('.splash-wave-svg');
 
-  if (!splashScreen) return;
+  if (!splashScreen || !splashWavePath || !imgSource) return;
 
-  let videoEnded = false;
-  let textCompleted = false;
-  let transitionTriggered = false;
+  /*
+   * splash.png은 선화 이미지다.
+   *
+   * 목표:
+   * 1. 외부 배경 = 투명
+   * 2. 실제 반가사유상 몸체 = 흰색 마스크
+   * 3. 팔/가슴/다리 사이 Negative Space = 투명
+   * 4. 원본 선화는 별도의 overlay로 그대로 유지
+   */
+  function createSolidMask(img, callback) {
+    const natW = img.naturalWidth;
+    const natH = img.naturalHeight;
 
-  function checkAndExitSplash() {
-    if (videoEnded && textCompleted && !transitionTriggered) {
-      setTimeout(() => {
-        triggerSplashExit();
-      }, 480);
-    }
-  }
-
-  function triggerSplashExit() {
-    if (transitionTriggered) return;
-    transitionTriggered = true;
-
-    const heroEl = document.getElementById('hero');
-
-    if (splashScreen) {
-      splashScreen.classList.add('is-crossfading');
-      splashScreen.style.pointerEvents = 'none';
+    if (!natW || !natH) {
+      console.warn('[Splash] splash.png size error');
+      return;
     }
 
-    if (heroEl) {
-      heroEl.classList.add('hero-crossfade-entering');
-      void heroEl.offsetWidth; // force reflow
-      heroEl.classList.add('is-active');
-    }
+    const pad = 16;
 
-    setTimeout(() => {
-      if (heroEl) {
-        heroEl.classList.remove('hero-crossfade-entering', 'is-active');
-        heroEl.style.transform = '';
-        heroEl.style.transition = '';
-        heroEl.style.opacity = '';
-        heroEl.style.filter = '';
-      }
-      if (splashScreen) {
-        splashScreen.remove();
-      }
-    }, 700);
-  }
+    const W = natW + pad * 2;
+    const H = natH + pad * 2;
+    const total = W * H;
 
-  // Encrypted text decode animation setup (2 lines: "welcome to", "National Museum of Korea")
-  function startEncryptedTextAnimation() {
-    if (!splashEncryptedText) return;
+    /* ========================================
+       STEP 1
+       원본 선화 캔버스
+    ======================================== */
 
-    const linesText = [
-      "welcome to",
-      "National Museum of Korea"
-    ];
-    const scrambleChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
-    const revealDelayMs = 36; // ~25-30% slower decoding speed (28ms -> 36ms)
-    const scrambleSpeedMs = 45; // scramble interval tick
+    const sourceCanvas = document.createElement('canvas');
+    sourceCanvas.width = W;
+    sourceCanvas.height = H;
 
-    const charItems = [];
-    splashEncryptedText.innerHTML = '';
-    let globalIndex = 0;
-
-    linesText.forEach((lineStr) => {
-      const lineSpan = document.createElement('span');
-      lineSpan.className = 'splash-encrypted-line';
-
-      const words = lineStr.split(' ');
-      words.forEach((word, wordIdx) => {
-        const wordSpan = document.createElement('span');
-        wordSpan.className = 'splash-encrypted-word';
-
-        for (let i = 0; i < word.length; i++) {
-          const char = word[i];
-          const charSpan = document.createElement('span');
-          charSpan.className = 'splash-encrypted-char splash-encrypted-char--encrypted';
-          charSpan.textContent = scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
-          wordSpan.appendChild(charSpan);
-
-          charItems.push({
-            element: charSpan,
-            targetChar: char,
-            globalIndex: globalIndex,
-            isSpace: false
-          });
-          globalIndex++;
-        }
-
-        lineSpan.appendChild(wordSpan);
-
-        if (wordIdx < words.length - 1) {
-          const spaceSpan = document.createElement('span');
-          spaceSpan.className = 'splash-encrypted-space';
-          spaceSpan.innerHTML = '&nbsp;';
-          lineSpan.appendChild(spaceSpan);
-
-          charItems.push({
-            element: spaceSpan,
-            targetChar: ' ',
-            globalIndex: globalIndex,
-            isSpace: true
-          });
-          globalIndex++;
-        }
-      });
-
-      splashEncryptedText.appendChild(lineSpan);
+    const sourceCtx = sourceCanvas.getContext('2d', {
+      willReadFrequently: true
     });
 
-    const totalChars = charItems.length;
-    let revealedCount = 0;
+    sourceCtx.clearRect(0, 0, W, H);
+    sourceCtx.drawImage(
+      img,
+      pad,
+      pad,
+      natW,
+      natH
+    );
 
-    // Timer for scrambling unrevealed characters
-    const scrambleInterval = setInterval(() => {
-      charItems.forEach((item) => {
-        if (item.isSpace) return;
-        if (item.globalIndex >= revealedCount) {
-          item.element.textContent = scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
-        }
-      });
-    }, scrambleSpeedMs);
+    const originalImageData =
+      sourceCtx.getImageData(0, 0, W, H);
 
-    // Timer for step-by-step reveal
-    const revealInterval = setInterval(() => {
-      if (revealedCount < totalChars) {
-        const current = charItems[revealedCount];
-        if (current && !current.isSpace) {
-          current.element.textContent = current.targetChar;
-          current.element.classList.remove('splash-encrypted-char--encrypted');
-          current.element.classList.add('splash-encrypted-char--revealed');
-        }
-        revealedCount++;
-      } else {
-        clearInterval(revealInterval);
-        clearInterval(scrambleInterval);
+    const original =
+      originalImageData.data;
 
-        // Ensure all characters are properly set to targetChar and revealed style
-        charItems.forEach((item) => {
-          if (!item.isSpace) {
-            item.element.textContent = item.targetChar;
-            item.element.classList.remove('splash-encrypted-char--encrypted');
-            item.element.classList.add('splash-encrypted-char--revealed');
+
+    /* ========================================
+       STEP 2
+       선을 살짝 굵게 만들어 작은 틈만 막는다.
+
+       blur를 강하게 사용하지 않는다.
+    ======================================== */
+
+    const boundary = new Uint8Array(total);
+
+    for (let y = 0; y < H; y++) {
+
+      for (let x = 0; x < W; x++) {
+
+        const idx = y * W + x;
+        const alpha = original[idx * 4 + 3];
+
+        if (alpha > 20) {
+
+          /*
+           * 원본 픽셀 주변 1px만 확장
+           */
+
+          for (let oy = -1; oy <= 1; oy++) {
+
+            for (let ox = -1; ox <= 1; ox++) {
+
+              const nx = x + ox;
+              const ny = y + oy;
+
+              if (
+                nx >= 0 &&
+                nx < W &&
+                ny >= 0 &&
+                ny < H
+              ) {
+
+                boundary[
+                  ny * W + nx
+                ] = 1;
+
+              }
+            }
           }
+        }
+      }
+    }
+
+
+    /* ========================================
+       STEP 3
+       캔버스 바깥쪽에서 Flood Fill
+
+       여기서 도달 가능한 영역은
+       무조건 "외부 배경"이다.
+    ======================================== */
+
+    const outside = new Uint8Array(total);
+
+    /*
+     * queue를 숫자 배열 하나로 처리해서
+     * 성능을 안정적으로 유지한다.
+     */
+
+    const queue = new Int32Array(total);
+
+    let queueStart = 0;
+    let queueEnd = 0;
+
+
+    function pushOutside(x, y) {
+
+      if (
+        x < 0 ||
+        x >= W ||
+        y < 0 ||
+        y >= H
+      ) return;
+
+      const idx = y * W + x;
+
+      if (outside[idx]) return;
+      if (boundary[idx]) return;
+
+      outside[idx] = 1;
+
+      queue[queueEnd++] = idx;
+    }
+
+
+    /*
+     * 네 모서리뿐 아니라
+     * 전체 캔버스 가장자리에서 시작
+     */
+
+    for (let x = 0; x < W; x++) {
+
+      pushOutside(x, 0);
+      pushOutside(x, H - 1);
+
+    }
+
+    for (let y = 0; y < H; y++) {
+
+      pushOutside(0, y);
+      pushOutside(W - 1, y);
+
+    }
+
+
+    while (queueStart < queueEnd) {
+
+      const idx =
+        queue[queueStart++];
+
+      const x =
+        idx % W;
+
+      const y =
+        Math.floor(idx / W);
+
+
+      pushOutside(x + 1, y);
+      pushOutside(x - 1, y);
+      pushOutside(x, y + 1);
+      pushOutside(x, y - 1);
+
+    }
+
+
+    /* ========================================
+       STEP 4
+       외부가 아닌 투명 영역을
+       각각 독립된 Region으로 분석
+    ======================================== */
+
+    const regionId =
+      new Int32Array(total);
+
+    regionId.fill(-1);
+
+    const regions = [];
+
+    let regionCount = 0;
+
+
+    for (let y = 0; y < H; y++) {
+
+      for (let x = 0; x < W; x++) {
+
+        const startIdx =
+          y * W + x;
+
+        if (outside[startIdx]) continue;
+        if (boundary[startIdx]) continue;
+        if (regionId[startIdx] !== -1) continue;
+
+
+        const id =
+          regionCount++;
+
+        let size = 0;
+
+        let minX = x;
+        let maxX = x;
+
+        let minY = y;
+        let maxY = y;
+
+        let sumX = 0;
+        let sumY = 0;
+
+
+        const regionQueue =
+          new Int32Array(total);
+
+        let rs = 0;
+        let re = 0;
+
+
+        regionId[startIdx] = id;
+
+        regionQueue[re++] =
+          startIdx;
+
+
+        while (rs < re) {
+
+          const idx =
+            regionQueue[rs++];
+
+          const px =
+            idx % W;
+
+          const py =
+            Math.floor(idx / W);
+
+
+          size++;
+
+          sumX += px;
+          sumY += py;
+
+          if (px < minX) minX = px;
+          if (px > maxX) maxX = px;
+
+          if (py < minY) minY = py;
+          if (py > maxY) maxY = py;
+
+
+          const neighbors = [
+            idx - 1,
+            idx + 1,
+            idx - W,
+            idx + W
+          ];
+
+
+          for (let n = 0; n < 4; n++) {
+
+            const ni =
+              neighbors[n];
+
+            if (
+              ni < 0 ||
+              ni >= total
+            ) continue;
+
+
+            const nx =
+              ni % W;
+
+            const ny =
+              Math.floor(ni / W);
+
+
+            /*
+             * 좌우 줄바꿈 방지
+             */
+
+            if (
+              Math.abs(nx - px) +
+              Math.abs(ny - py) !== 1
+            ) continue;
+
+
+            if (outside[ni]) continue;
+            if (boundary[ni]) continue;
+
+            if (
+              regionId[ni] !== -1
+            ) continue;
+
+
+            regionId[ni] = id;
+
+            regionQueue[re++] =
+              ni;
+
+          }
+        }
+
+
+        regions.push({
+
+          id,
+
+          size,
+
+          minX,
+          maxX,
+
+          minY,
+          maxY,
+
+          centerX:
+            sumX / size,
+
+          centerY:
+            sumY / size
+
         });
-
-        textCompleted = true;
-        checkAndExitSplash();
       }
-    }, revealDelayMs);
-  }
-
-  // Listen for video ended event if video element is present and active
-  if (splashVideo) {
-    splashVideo.addEventListener('ended', () => {
-      videoEnded = true;
-      checkAndExitSplash();
-    });
-  }
-
-  // ============================================================
-  // FRAMES_4 FRAME SEQUENCE ANIMATION PLAYBACK
-  // ============================================================
-  const TOTAL_FRAMES = 60;
-  const preloadedImages = [];
-  let loadedCount = 0;
-  let animationStarted = false;
-
-  for (let i = 1; i <= TOTAL_FRAMES; i++) {
-    const padIndex = String(i).padStart(4, '0');
-    const img = new Image();
-    img.src = `frames/frames_4/frame_${padIndex}.jpg`;
-    img.onload = () => {
-      loadedCount++;
-      if (!animationStarted && (loadedCount >= 3 || loadedCount === TOTAL_FRAMES)) {
-        startFramePlayback();
-      }
-    };
-    img.onerror = () => {
-      loadedCount++;
-      if (!animationStarted && (loadedCount >= 3 || loadedCount === TOTAL_FRAMES)) {
-        startFramePlayback();
-      }
-    };
-    preloadedImages.push(img);
-  }
-
-  // Safe fallback if images load from memory/cache instantly
-  setTimeout(() => {
-    if (!animationStarted) {
-      startFramePlayback();
-    }
-  }, 60);
-
-  function startFramePlayback() {
-    if (animationStarted) return;
-    animationStarted = true;
-
-    // Start Encrypted Text Decoding
-    startEncryptedTextAnimation();
-
-    let currentFrame = 0;
-    let lastTimestamp = performance.now();
-    const targetFps = 25; // Smooth sequence playback (~2.4s)
-    const frameInterval = 1000 / targetFps;
-
-    if (splashFrameImg && preloadedImages[0]) {
-      splashFrameImg.src = preloadedImages[0].src;
     }
 
-    function renderSequence(timestamp) {
-      if (transitionTriggered) return;
 
-      const elapsed = timestamp - lastTimestamp;
+    /* ========================================
+       STEP 5
+       실제 몸체 영역 결정
 
-      if (elapsed >= frameInterval) {
-        lastTimestamp = timestamp - (elapsed % frameInterval);
+       중요:
+       "가장 큰 영역 = hole"이 아니다.
 
-        if (currentFrame < TOTAL_FRAMES) {
-          if (splashFrameImg && preloadedImages[currentFrame]) {
-            splashFrameImg.src = preloadedImages[currentFrame].src;
-          }
+       가장 큰 내부 영역을
+       반가사유상의 BODY로 사용한다.
+    ======================================== */
 
-          currentFrame++;
+    let bodyRegion = null;
 
-          if (statueWrap) {
-            const glowFactor = currentFrame / TOTAL_FRAMES;
-            const shadowBlur = 6 + glowFactor * 16;
-            const shadowAlpha = 0.3 + glowFactor * 0.5;
-            statueWrap.style.filter = `drop-shadow(0 0 ${shadowBlur.toFixed(1)}px rgba(241, 213, 154, ${shadowAlpha.toFixed(2)}))`;
-          }
+
+    for (const region of regions) {
+
+      if (
+        !bodyRegion ||
+        region.size > bodyRegion.size
+      ) {
+
+        bodyRegion = region;
+
+      }
+    }
+
+
+    if (!bodyRegion) {
+
+      console.warn(
+        '[Splash] body region not found'
+      );
+
+      return;
+    }
+
+
+    /* ========================================
+       STEP 6
+       Negative Space 판별
+
+       팔 / 가슴 / 다리 사이의 구멍은
+       몸체 내부 중앙 부근에 위치한다.
+
+       몸체보다 훨씬 작은
+       독립 Region만 hole 후보가 된다.
+    ======================================== */
+
+    const holes =
+      new Set();
+
+
+    const bodyWidth =
+      bodyRegion.maxX -
+      bodyRegion.minX;
+
+    const bodyHeight =
+      bodyRegion.maxY -
+      bodyRegion.minY;
+
+
+    for (const region of regions) {
+
+      if (
+        region.id ===
+        bodyRegion.id
+      ) continue;
+
+
+      /*
+       * 너무 작은 노이즈는 무시
+       */
+
+      if (region.size < 20)
+        continue;
+
+
+      /*
+       * 몸체 크기의 35%보다 큰 영역은
+       * hole로 보지 않는다.
+       */
+
+      if (
+        region.size >
+        bodyRegion.size * 0.35
+      ) continue;
+
+
+      /*
+       * 실제 몸체 Bounding Box 내부에
+       * 존재하는 영역만 hole 가능
+       */
+
+      const insideBodyBounds =
+
+        region.centerX >
+        bodyRegion.minX +
+
+        bodyWidth * 0.08
+
+        &&
+
+        region.centerX <
+        bodyRegion.maxX -
+
+        bodyWidth * 0.08
+
+        &&
+
+        region.centerY >
+        bodyRegion.minY +
+
+        bodyHeight * 0.08
+
+        &&
+
+        region.centerY <
+        bodyRegion.maxY -
+
+        bodyHeight * 0.08;
+
+
+      if (insideBodyBounds) {
+
+        holes.add(
+          region.id
+        );
+
+      }
+    }
+
+
+    /* ========================================
+       STEP 7
+       최종 마스크 생성
+    ======================================== */
+
+    const maskCanvas =
+      document.createElement('canvas');
+
+    maskCanvas.width = W;
+    maskCanvas.height = H;
+
+
+    const maskCtx =
+      maskCanvas.getContext('2d');
+
+
+    const maskImage =
+      maskCtx.createImageData(
+        W,
+        H
+      );
+
+
+    const mask =
+      maskImage.data;
+
+
+    for (let i = 0; i < total; i++) {
+
+      const p =
+        i * 4;
+
+
+      let fill = false;
+
+
+      /*
+       * 원본 외곽선
+       */
+
+      if (boundary[i]) {
+
+        fill = true;
+
+      }
+
+
+      /*
+       * BODY
+       */
+
+      if (
+        regionId[i] ===
+        bodyRegion.id
+      ) {
+
+        fill = true;
+
+      }
+
+
+      /*
+       * Negative Space는
+       * 반드시 다시 제거
+       */
+
+      if (
+        holes.has(
+          regionId[i]
+        )
+      ) {
+
+        fill = false;
+
+      }
+
+
+      /*
+       * 외부 배경은
+       * 최종적으로 무조건 투명
+       */
+
+      if (outside[i]) {
+
+        fill = false;
+
+      }
+
+
+      if (fill) {
+
+        mask[p] = 255;
+        mask[p + 1] = 255;
+        mask[p + 2] = 255;
+        mask[p + 3] = 255;
+
+      } else {
+
+        mask[p] = 0;
+        mask[p + 1] = 0;
+        mask[p + 2] = 0;
+        mask[p + 3] = 0;
+
+      }
+    }
+
+
+    maskCtx.putImageData(
+      maskImage,
+      0,
+      0
+    );
+
+
+    const maskUrl =
+      maskCanvas.toDataURL(
+        'image/png'
+      );
+
+
+    callback(
+      maskUrl,
+      W,
+      H
+    );
+  }
+
+
+  /* ========================================
+     LOADING ANIMATION
+  ======================================== */
+
+  function startLoadingAnimation(
+    maskUrl,
+    SVG_W,
+    SVG_H
+  ) {
+    const splashWaveHighlight = document.getElementById('splashWaveHighlight');
+    const splashGoldFlash = document.getElementById('splashGoldFlash');
+    const splashShockwave = document.getElementById('splashShockwave');
+
+    if (splashWaveSvg) {
+      splashWaveSvg.setAttribute(
+        'viewBox',
+        `0 0 ${SVG_W} ${SVG_H}`
+      );
+
+      splashWaveSvg.setAttribute(
+        'preserveAspectRatio',
+        'xMidYMid meet'
+      );
+    }
+
+    if (splashLiquidLayer) {
+      splashLiquidLayer.style.maskImage =
+        `url("${maskUrl}")`;
+
+      splashLiquidLayer.style.webkitMaskImage =
+        `url("${maskUrl}")`;
+
+      splashLiquidLayer.style.maskSize =
+        'contain';
+
+      splashLiquidLayer.style.webkitMaskSize =
+        'contain';
+
+      splashLiquidLayer.style.maskPosition =
+        'center';
+
+      splashLiquidLayer.style.webkitMaskPosition =
+        'center';
+
+      splashLiquidLayer.style.maskRepeat =
+        'no-repeat';
+
+      splashLiquidLayer.style.webkitMaskRepeat =
+        'no-repeat';
+
+      splashLiquidLayer.style.opacity =
+        '1';
+    }
+
+    let progress = 0;
+    let phase = 0;
+    let animationFrameId = null;
+    let completed = false;
+
+    const frequency = 0.04;
+
+    function renderFrame() {
+      if (completed) return;
+
+      /*
+       * 로딩 속도
+       */
+      progress += 0.75;
+
+      if (progress > 100)
+        progress = 100;
+
+      const currentPercent =
+        Math.floor(progress);
+
+      if (splashPercent) {
+        splashPercent.textContent =
+          `${currentPercent}%`;
+      }
+
+      /*
+       * 아래 -> 위
+       */
+      const fillY =
+        SVG_H -
+        (progress / 100) *
+        SVG_H;
+
+      phase += 0.065;
+
+      /*
+       * 0~90% 절제된 정교한 Dark Gold Outline
+       * 90%~100% 은은한 Golden Aura 형성
+       */
+      if (statueWrap) {
+        if (progress < 90) {
+          const shadowBlur = 6 + (progress / 90) * 8;
+          const shadowAlpha = 0.25 + (progress / 90) * 0.25;
+          statueWrap.style.filter = `drop-shadow(0 0 ${shadowBlur.toFixed(1)}px rgba(201, 161, 90, ${shadowAlpha.toFixed(2)}))`;
         } else {
-          // Frame sequence ended completely!
-          videoEnded = true;
-          checkAndExitSplash();
-          return;
+          const auraFactor = (progress - 90) / 10;
+          const shadowBlur = 14 + auraFactor * 14;
+          const shadowAlpha = 0.5 + auraFactor * 0.4;
+          statueWrap.style.filter = `drop-shadow(0 0 ${shadowBlur.toFixed(1)}px rgba(241, 213, 154, ${shadowAlpha.toFixed(2)})) brightness(${1.0 + auraFactor * 0.12})`;
         }
       }
 
-      requestAnimationFrame(renderSequence);
+      /*
+       * 마지막 5%에서 파도 자연스럽게 사라짐
+       */
+      let amplitude = 3.5;
+
+      if (progress > 95) {
+        amplitude =
+          3.5 *
+          ((100 - progress) / 5);
+      }
+
+      let pathD;
+      let highlightD = '';
+
+      if (progress >= 100) {
+        /*
+         * 100%에서는 전체 사각형으로 채운다.
+         * 실제 표시 영역은 CSS mask가 BODY만 남긴다.
+         */
+        pathD =
+          `M 0 0 ` +
+          `L ${SVG_W} 0 ` +
+          `L ${SVG_W} ${SVG_H} ` +
+          `L 0 ${SVG_H} Z`;
+      } else {
+        pathD =
+          `M 0 ${SVG_H} ` +
+          `L 0 ${fillY}`;
+
+        highlightD = `M 0 ${fillY.toFixed(2)}`;
+
+        const step =
+          Math.max(
+            4,
+            Math.floor(
+              SVG_W / 70
+            )
+          );
+
+        for (
+          let x = 0;
+          x <= SVG_W;
+          x += step
+        ) {
+          const waveY =
+            fillY +
+            Math.sin(
+              x * frequency +
+              phase
+            ) *
+            amplitude;
+
+          pathD +=
+            ` L ${x} ${waveY.toFixed(2)}`;
+          highlightD +=
+            ` L ${x} ${waveY.toFixed(2)}`;
+        }
+
+        pathD +=
+          ` L ${SVG_W} ${SVG_H} Z`;
+      }
+
+      splashWavePath.setAttribute(
+        'd',
+        pathD
+      );
+
+      if (splashWaveHighlight) {
+        splashWaveHighlight.setAttribute('d', progress >= 99.5 ? '' : highlightD);
+      }
+
+      /*
+       * 작은 금빛 입자
+       */
+      if (
+        progress > 8 &&
+        progress < 94 &&
+        Math.random() < 0.28
+      ) {
+        spawnSplashParticle(
+          fillY
+        );
+      }
+
+      if (progress >= 100) {
+        completed = true;
+        onSplashComplete();
+        return;
+      }
+
+      animationFrameId =
+        requestAnimationFrame(
+          renderFrame
+        );
     }
 
-    requestAnimationFrame(renderSequence);
+    function spawnSplashParticle(
+      fillY
+    ) {
+      if (!splashParticles)
+        return;
+
+      const particle =
+        document.createElement(
+          'div'
+        );
+
+      particle.className =
+        'splash-particle-dot';
+
+      const randomX =
+        Math.random() * 60 + 20;
+
+      const randomY =
+        (fillY / SVG_H) *
+        100 +
+        (Math.random() * 5 - 2.5);
+
+      particle.style.left =
+        `${randomX}%`;
+
+      particle.style.top =
+        `${randomY}%`;
+
+      splashParticles.appendChild(
+        particle
+      );
+
+      setTimeout(() => {
+        particle.remove();
+      }, 1100);
+    }
+
+    function trigger360GoldBurst() {
+      // 1. Activate Golden Halo behind statue
+      const splashHalo = document.getElementById('splashHalo');
+      if (splashHalo) {
+        splashHalo.classList.add('is-active');
+      }
+      // 2. Shockwave ring expansion
+      if (splashShockwave) {
+        splashShockwave.classList.add('is-active');
+      }
+      // 3. Gold Flash pulse
+      if (splashGoldFlash) {
+        splashGoldFlash.classList.add('is-active');
+      }
+      // 4. 360° Golden Light Streaks & Fine Dust Particles (Matching Reference)
+      if (splashParticles) {
+        const streakCount = 28;
+        for (let i = 0; i < streakCount; i++) {
+          const streak = document.createElement('div');
+          streak.className = 'splash-light-streak';
+          const angle = (i / streakCount) * 360 + (Math.random() * 8 - 4);
+          const len = 50 + Math.random() * 70;
+          const dist = 80 + Math.random() * 90;
+          const duration = 0.45 + Math.random() * 0.25;
+
+          streak.style.setProperty('--angle', `${angle.toFixed(1)}deg`);
+          streak.style.setProperty('--streak-len', `${len.toFixed(1)}px`);
+          streak.style.setProperty('--dist', `${dist.toFixed(1)}px`);
+          streak.style.setProperty('--duration', `${duration.toFixed(2)}s`);
+
+          splashParticles.appendChild(streak);
+        }
+
+        const particleCount = 36;
+        for (let i = 0; i < particleCount; i++) {
+          const particle = document.createElement('div');
+          particle.className = 'splash-burst-particle';
+
+          const angle = (i / particleCount) * Math.PI * 2 + (Math.random() * 0.3 - 0.15);
+          const distance = 65 + Math.random() * 105;
+          const tx = Math.cos(angle) * distance;
+          const ty = Math.sin(angle) * distance;
+          const size = Math.random() * 2.4 + 1.6;
+          const duration = 0.5 + Math.random() * 0.35;
+
+          particle.style.width = `${size}px`;
+          particle.style.height = `${size}px`;
+          particle.style.setProperty('--tx', `${tx.toFixed(1)}px`);
+          particle.style.setProperty('--ty', `${ty.toFixed(1)}px`);
+          particle.style.setProperty('--duration', `${duration.toFixed(2)}s`);
+
+          splashParticles.appendChild(particle);
+        }
+      }
+    }
+
+    function onSplashComplete() {
+      if (splashPercent) {
+        splashPercent.textContent =
+          '100%';
+      }
+
+      // 0.2초 Solid Gold 상태 유지 후 360° 금빛 폭발 연출
+      setTimeout(() => {
+        if (statueWrap) {
+          statueWrap.style.transition =
+            'filter 0.4s ease';
+
+          statueWrap.style.filter =
+            'drop-shadow(0 0 32px rgba(241, 213, 154, 0.98)) brightness(1.2)';
+        }
+
+        trigger360GoldBurst();
+
+        // 0.4초 동안 잔여 Gold Dust 유지 후 자연스러운 Fade Out
+        setTimeout(() => {
+          splashScreen.style.transition =
+            'opacity 0.85s cubic-bezier(0.19, 1, 0.22, 1)';
+
+          splashScreen.style.opacity =
+            '0';
+
+          splashScreen.style.pointerEvents =
+            'none';
+
+          setTimeout(() => {
+            if (animationFrameId) {
+              cancelAnimationFrame(
+                animationFrameId
+              );
+            }
+
+            splashScreen.remove();
+          }, 850);
+        }, 400);
+      }, 200);
+    }
+
+    animationFrameId =
+      requestAnimationFrame(
+        renderFrame
+      );
+  }
+
+
+  /* ========================================
+     START
+  ======================================== */
+
+  function start() {
+
+    createSolidMask(
+      imgSource,
+      startLoadingAnimation
+    );
+
+  }
+
+
+  if (
+    imgSource.complete &&
+    imgSource.naturalWidth > 0
+  ) {
+
+    start();
+
+  } else {
+
+    imgSource.addEventListener(
+      'load',
+      start,
+      {
+        once: true
+      }
+    );
+
+
+    imgSource.addEventListener(
+      'error',
+      () => {
+
+        console.warn(
+          '[Splash] splash.png load failed'
+        );
+
+
+        /*
+         * 이미지 오류 때문에
+         * 사이트 자체가 막히지 않도록 처리
+         */
+
+        splashScreen.style.opacity =
+          '0';
+
+
+        setTimeout(() => {
+
+          splashScreen.remove();
+
+        }, 500);
+
+      },
+      {
+        once: true
+      }
+    );
   }
 }

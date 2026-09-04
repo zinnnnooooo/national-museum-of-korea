@@ -20,18 +20,44 @@
      ============================================================ -->
   <div class="splash-screen" id="splashScreen">
     <div class="splash-gold-flash" id="splashGoldFlash"></div>
-    <video id="splashVideo" class="splash-video" playsinline muted style="display: none;"></video>
-    <img id="splashFrameImg" class="splash-frame-img" alt="Splash Animation Frame" />
-    <div class="splash-gemini-cover"></div>
     <div class="splash-content">
-      <div class="splash-encrypted-wrap">
-        <p class="splash-encrypted-text" id="splashEncryptedText" aria-label="welcome to National Museum of Korea"></p>
+      <div class="splash-counter">
+        <span class="splash-percent" id="splashPercent">0%</span>
+        <span class="splash-subtitle">NATIONAL MUSEUM OF KOREA</span>
       </div>
 
-      <div class="splash-statue-wrap" id="splashStatueWrap" style="display: none;">
+      <div class="splash-statue-wrap" id="splashStatueWrap">
         <div class="splash-halo" id="splashHalo"></div>
         <div class="splash-shockwave" id="splashShockwave"></div>
-        <img src="design/splash.png" id="splashImgSource" alt="Pensive Bodhisattva Silhouette" class="splash-statue-bg" style="display: none;">
+        <img src="design/splash.png" id="splashImgSource" alt="Pensive Bodhisattva Silhouette" class="splash-statue-bg">
+        <div class="splash-liquid-layer" id="splashLiquidLayer">
+          <svg class="splash-wave-svg" viewBox="0 0 240 340" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="splashGoldGrad" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0%" stop-color="#2E200B" />
+                <stop offset="25%" stop-color="#5E4419" />
+                <stop offset="55%" stop-color="#C9A15A" />
+                <stop offset="88%" stop-color="#EAD198" />
+                <stop offset="100%" stop-color="#FFF8E7" />
+              </linearGradient>
+              <linearGradient id="splashShimmerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="rgba(255, 248, 231, 0)" />
+                <stop offset="45%" stop-color="rgba(255, 248, 231, 0.25)" />
+                <stop offset="50%" stop-color="rgba(255, 248, 231, 0.45)" />
+                <stop offset="55%" stop-color="rgba(255, 248, 231, 0.25)" />
+                <stop offset="100%" stop-color="rgba(255, 248, 231, 0)" />
+              </linearGradient>
+              <filter id="liquidGlow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="1.5" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+            </defs>
+            <path id="splashWavePath" fill="url(#splashGoldGrad)" filter="url(#liquidGlow)" />
+            <path id="splashShimmerPath" fill="url(#splashShimmerGrad)" opacity="0.65" />
+            <path id="splashWaveHighlight" fill="none" stroke="#FFF8E7" stroke-width="1.8" filter="url(#liquidGlow)" />
+          </svg>
+          <div class="splash-particles" id="splashParticles"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -193,89 +219,19 @@
         <canvas id="heroCanvas"></canvas>
         <div class="hero-video-overlay" aria-hidden="true"></div>
 
-        <!-- Floating Quick Menu (Bottom-Right Gemini Gold Mark) -->
-        <div class="hero-floating-menu" id="heroFloatingMenu">
-          <div class="hero-floating-panel" id="heroFloatingPanel" aria-hidden="true">
-            <a class="hero-floating-item" href="heritage.html">
-              <div class="hero-floating-item__icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-              </div>
-              <div class="hero-floating-item__text">
-                <strong>Korean Heritage</strong>
-                <span>Discover Korea's thousands of years of culture</span>
-              </div>
-            </a>
-
-            <a class="hero-floating-item" href="boutique.html">
-              <div class="hero-floating-item__icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <circle cx="10" cy="10" r="6.5" stroke="currentColor" stroke-width="1.3" />
-                  <path d="M15 15l5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
-                </svg>
-              </div>
-              <div class="hero-floating-item__text">
-                <strong>Search Artifacts</strong>
-                <span>Discover the collection of NMK</span>
-              </div>
-            </a>
-
-            <a class="hero-floating-item" href="reservation.html">
-              <div class="hero-floating-item__icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <rect x="3" y="5" width="18" height="15" rx="1" stroke="currentColor" stroke-width="1.3" />
-                  <path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.3" />
-                </svg>
-              </div>
-              <div class="hero-floating-item__text">
-                <strong>Book a Visit</strong>
-                <span>Schedule your visit to the museum</span>
-              </div>
-            </a>
-
-            <a class="hero-floating-item" href="visit.html">
-              <div class="hero-floating-item__icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z" stroke="currentColor" stroke-width="1.3" />
-                  <circle cx="12" cy="9.5" r="2.3" stroke="currentColor" stroke-width="1.3" />
-                </svg>
-              </div>
-              <div class="hero-floating-item__text">
-                <strong>Directions &amp; Hours</strong>
-                <span>Find location and transportation info</span>
-              </div>
-            </a>
-
-            <div class="hero-floating-item hero-floating-item--video" id="floatingVideoBtn">
-              <div class="hero-floating-item__icon hero-floating-item__icon--video">
-                <svg width="10" height="12" viewBox="0 0 10 12" fill="currentColor">
-                  <path d="M0 0l10 6-10 6z" />
-                </svg>
-              </div>
-              <div class="hero-floating-item__text">
-                <strong>Museum Introduction Video</strong>
-                <span>PLAY</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Main Gold Floating Button (Gemini Mark) -->
-          <button class="hero-floating-trigger" id="heroFloatingTrigger" type="button" aria-label="Quick Menu">
-            <span class="hero-floating-trigger__aura"></span>
-            <svg class="hero-floating-trigger__icon" width="30.5" height="30.5" viewBox="0 0 24 24" fill="none">
-              <!-- Korean Traditional Geometric Lattice Motif (국립중앙박물관 전통 문양) -->
-              <rect x="4" y="4" width="16" height="16" rx="1.5" stroke="currentColor" stroke-width="1.3" transform="rotate(45 12 12)" />
-              <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
-              <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.3" />
-              <circle cx="12" cy="12" r="1" fill="currentColor" />
-            </svg>
-            <svg class="hero-floating-trigger__close" width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-            </svg>
-          </button>
-        </div>
-
+        <!-- Hero Navigation Arrows -->
+        <button class="hero-nav-btn hero-nav-btn--prev" id="heroPrevBtn" aria-label="Previous Artifact">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M15 19l-7-7 7-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </button>
+        <button class="hero-nav-btn hero-nav-btn--next" id="heroNextBtn" aria-label="Next Artifact">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </button>
 
         <!-- Interactive Museum Archive Overlay -->
         <div class="hero-archive-overlay" id="heroArchiveOverlay">
@@ -371,7 +327,6 @@
       </div>
 
       <div class="container hero-bottom">
-        <!-- Hero Search Field (Positioned above Navigator) -->
         <form class="hero-search" data-reveal="hero-search">
           <div class="hero-search__field">
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -382,29 +337,58 @@
           </div>
         </form>
 
-        <!-- Hero Collection Navigator (01 BAEKJE  ━━━━━  02 BODHISATTVA  ━━━━━  03 SILLA) -->
-        <nav class="hero-navigator" aria-label="Hero Collection Navigator" data-reveal="hero-search">
-          <button class="hero-nav-item is-active" data-hero-index="0" data-hero="baekje" type="button">
-            <span class="hero-nav-item__num">01</span>
-            <span class="hero-nav-item__label">BAEKJE</span>
-            <span class="hero-nav-item__line"></span>
-          </button>
-
-          <div class="hero-nav-divider" aria-hidden="true"></div>
-
-          <button class="hero-nav-item" data-hero-index="1" data-hero="bangasayusang" type="button">
-            <span class="hero-nav-item__num">02</span>
-            <span class="hero-nav-item__label">BODHISATTVA</span>
-            <span class="hero-nav-item__line"></span>
-          </button>
-
-          <div class="hero-nav-divider" aria-hidden="true"></div>
-
-          <button class="hero-nav-item" data-hero-index="2" data-hero="sillaCrown" type="button">
-            <span class="hero-nav-item__num">03</span>
-            <span class="hero-nav-item__label">GOLD CROWN</span>
-            <span class="hero-nav-item__line"></span>
-          </button>
+        <nav class="hero-quick-nav">
+          <a class="hero-quick-nav__item" href="heritage.html" data-reveal="hero-btn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span class="hero-quick-nav__text">
+              <strong>Korean Heritage</strong>
+              <span>Discover Korea's thousands of years of culture</span>
+            </span>
+          </a>
+          <a class="hero-quick-nav__item" href="boutique.html" data-reveal="hero-btn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <circle cx="10" cy="10" r="6.5" stroke="currentColor" stroke-width="1.3" />
+              <path d="M15 15l5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+            </svg>
+            <span class="hero-quick-nav__text">
+              <strong>Search Artifacts</strong>
+              <span>Discover the collection of the National Museum of Korea</span>
+            </span>
+          </a>
+          <a class="hero-quick-nav__item" href="reservation.html" data-reveal="hero-btn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="5" width="18" height="15" rx="1" stroke="currentColor" stroke-width="1.3" />
+              <path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.3" />
+            </svg>
+            <span class="hero-quick-nav__text">
+              <strong>Book a Visit</strong>
+              <span>Schedule your visit to the museum with ease</span>
+            </span>
+          </a>
+          <a class="hero-quick-nav__item" href="visit.html" data-reveal="hero-btn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z" stroke="currentColor"
+                stroke-width="1.3" />
+              <circle cx="12" cy="9.5" r="2.3" stroke="currentColor" stroke-width="1.3" />
+            </svg>
+            <span class="hero-quick-nav__text">
+              <strong>Directions &amp; Hours</strong>
+              <span>Find museum location and transportation info</span>
+            </span>
+          </a>
+          <div class="hero-quick-nav__video" data-reveal="hero-btn">
+            <span class="hero-quick-nav__video-btn">
+              <svg width="10" height="12" viewBox="0 0 10 12" fill="currentColor">
+                <path d="M0 0l10 6-10 6z" />
+              </svg>
+            </span>
+            <span class="hero-quick-nav__text">
+              <strong>Museum Introduction Video</strong>
+              <span>PLAY</span>
+            </span>
+          </div>
         </nav>
       </div>
     </div>
