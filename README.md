@@ -272,8 +272,11 @@ national-museum-of-korea/
 
 ## 🔗 Links
 
-- **GitHub Repository** - https://github.com/zinnnnooooo/national-museum-of-korea
-- **Figma Design** - https://www.figma.com/design/gUa0PJ8LwHeUZEynNoqP9U/%EA%B5%AD%EB%A6%BD%EC%A4%91%EC%95%99%EB%B0%95%EB%AC%BC%EA%B4%80-%EB%A6%AC%EB%94%94%EC%9E%90%EC%9D%B8?node-id=0-1&t=QUl1euuSGv6yqgV8-1
+- **GitHub Repository**  
+  [깃허브 바로가기](https://github.com/zinnnnooooo/national-museum-of-korea)
+
+- **Figma Design**  
+  [피그마 바로가기](https://www.figma.com/design/gUa0PJ8LwHeUZEynNoqP9U/%EA%B5%AD%EB%A6%BD%EC%A4%91%EC%95%99%EB%B0%95%EB%AC%BC%EA%B4%80-%EB%A6%AC%EB%94%94%EC%9E%90%EC%9D%B8?node-id=0-1&t=QUl1euuSGv6yqgV8-1)
 ---
 
 ## © Copyright
